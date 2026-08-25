@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#151009">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chronicle Engine">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Chronicle Engine — a formation-based idle battler template.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Chronicle Engine</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root{
+    --ink:#241a12;
+    --parchment:#e9dcb9;
+    --parchment-dark:#d8c79c;
+    --parchment-edge:#b8a271;
+    --void:#151009;
+    --void-2:#1f1710;
+    --gold:#c9962e;
+    --gold-bright:#e8b84b;
+    --blood:#7a2b23;
+
+    --c-common:#8a8172;
+    --c-uncommon:#4f7d4c;
+    --c-rare:#3766a0;
+    --c-epic:#7a4590;
+    --c-legendary:#c9962e;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--void);color:var(--parchment);
+    font-family:'EB Garamond', serif; height:100%; overflow-x:hidden;}
+  #app{max-width:560px;margin:0 auto;min-height:100%;position:relative;
+    background:
+      radial-gradient(ellipse at top, rgba(201,150,46,0.08), transparent 60%),
+      var(--void);
+    padding-bottom:78px;}
+
+  h1,h2,h3,.display{font-family:'Cinzel', serif; letter-spacing:0.03em;}
+
+  /* ---------- Header ---------- */
+  header{padding:18px 16px 14px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid rgba(201,150,46,0.25);}
+  header .title{font-size:15px; font-weight:700; color:var(--gold-bright); text-transform:uppercase; letter-spacing:0.12em;}
+  header .title small{display:block; font-family:'EB Garamond',serif; font-style:italic; letter-spacing:0; color:#8a7d5f; font-size:11px; text-transform:none; margin-top:2px;}
+  .resources{display:flex; gap:14px;}
+  .res{display:flex; align-items:center; gap:5px; font-size:13px; color:var(--parchment);}
+  .res .icon{width:16px;height:16px;border-radius:50%;display:inline-block;}
+  .icon.gold-icon{background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold) 60%, #7a5a1a); box-shadow:0 0 6px rgba(201,150,46,0.6);}
+  .icon.relic-icon{background:radial-gradient(circle at 35% 30%, #b8a6e0, #6b4f9e 60%, #3a2860); box-shadow:0 0 6px rgba(107,79,158,0.6);}
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{position:fixed; bottom:0; left:0; right:0; max-width:560px; margin:0 auto;
+    display:flex; background:var(--void-2); border-top:1px solid rgba(201,150,46,0.3); z-index:20;}
+  nav.tabs button{flex:1; background:none; border:none; color:#8a7d5f; font-family:'Cinzel',serif;
+    font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; padding:12px 4px 10px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px; transition:color .15s;}
+  nav.tabs button .dot{width:5px;height:5px;border-radius:50%;background:transparent;}
+  nav.tabs button.active{color:var(--gold-bright);}
+  nav.tabs button.active .dot{background:var(--gold-bright); box-shadow:0 0 6px var(--gold-bright);}
+
+  section.view{padding:16px; display:none;}
+  section.view.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-title{font-size:12px; text-transform:uppercase; letter-spacing:0.14em; color:var(--gold);
+    margin:22px 0 10px; display:flex; align-items:center; gap:8px;}
+  .section-title::after{content:''; flex:1; height:1px; background:linear-gradient(to right, rgba(201,150,46,0.4), transparent);}
+  .section-title:first-child{margin-top:0;}
+
+  /* ---------- Stage banner ---------- */
+  .stage-banner{border:1px solid var(--parchment-edge); background:linear-gradient(180deg, rgba(233,220,185,0.06), rgba(233,220,185,0.02));
+    border-radius:4px; padding:14px; text-align:center; position:relative;}
+  .stage-banner .chapter{font-size:10px; letter-spacing:0.2em; color:#8a7d5f; text-transform:uppercase;}
+  .stage-banner .stage-num{font-size:26px; color:var(--gold-bright); margin:2px 0;}
+  .stage-banner .stage-name{font-style:italic; color:#c9bd9e; font-size:14px;}
+
+  /* ---------- Formation grid ---------- */
+  .formation-wrap{margin-top:14px; position:relative;}
+  .formation-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:16px 8px;
+    background:
+      linear-gradient(180deg, rgba(201,150,46,0.05), transparent),
+      repeating-linear-gradient(45deg, rgba(201,150,46,0.02) 0 2px, transparent 2px 14px);
+    border:1px solid rgba(201,150,46,0.2); border-radius:6px;}
+  .formation-row{grid-column:span 3; display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .formation-row.back{grid-template-columns:repeat(2,1fr); max-width:72%; margin:0 auto 4px;}
+  .slot{aspect-ratio:1; border-radius:50%; border:2px dashed rgba(201,150,46,0.35);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative;
+    background:rgba(21,16,9,0.4); transition:transform .12s, border-color .12s;}
+  .slot:active{transform:scale(0.94);}
+  .slot.filled{border-style:solid;}
+  .slot .hero-icon{width:82%; height:82%; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:22px; font-family:'Cinzel',serif; color:var(--ink); font-weight:700;}
+  .slot .lv-badge{position:absolute; bottom:-4px; right:-4px; background:var(--void-2); border:1px solid var(--gold);
+    color:var(--gold-bright); font-size:9px; padding:1px 4px; border-radius:8px; font-family:'Cinzel',serif;}
+  .slot .role-tag{position:absolute; top:-3px; left:-3px; font-size:9px;}
+  .slot-label{position:absolute; bottom:-16px; left:0; right:0; text-align:center; font-size:8.5px; letter-spacing:0.1em;
+    text-transform:uppercase; color:#6b5f47;}
+
+  .power-line{display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-size:13px;}
+  .power-line .val{color:var(--gold-bright); font-family:'Cinzel',serif; font-size:16px;}
+
+  button.primary{width:100%; margin-top:14px; padding:13px; border:none; border-radius:4px; cursor:pointer;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:var(--ink); font-family:'Cinzel',serif;
+    font-size:13px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
+    box-shadow:0 3px 0 #7a5a1a, 0 4px 10px rgba(0,0,0,0.4);}
+  button.primary:active{transform:translateY(2px); box-shadow:0 1px 0 #7a5a1a;}
+  button.primary:disabled{opacity:0.4; box-shadow:none;}
+  button.secondary{width:100%; margin-top:8px; padding:11px; border:1px solid var(--parchment-edge); border-radius:4px;
+    background:transparent; color:var(--parchment); font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; cursor:pointer;}
+
+  /* ---------- Roster ---------- */
+  .roster-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:4px;}
+  .hero-card{border:1px solid rgba(201,150,46,0.25); border-radius:6px; padding:8px 6px 10px; text-align:center;
+    background:rgba(233,220,185,0.03); cursor:pointer; position:relative;}
+  .hero-card.selected{border-color:var(--gold-bright); box-shadow:0 0 0 1px var(--gold-bright) inset;}
+  .hero-card .portrait{width:52px; height:52px; border-radius:50%; margin:0 auto 6px; display:flex; align-items:center;
+    justify-content:center; font-family:'Cinzel',serif; font-weight:700; font-size:18px; color:var(--ink);}
+  .hero-card .name{font-size:11.5px; color:var(--parchment); line-height:1.2;}
+  .hero-card .rarity-label{font-size:8.5px; text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;}
+  .hero-card .lv{font-size:9px; color:#8a7d5f; margin-top:2px;}
+  .hero-card.locked{opacity:0.35; filter:grayscale(1);}
+
+  /* ---------- Detail sheet ---------- */
+  .sheet-overlay{position:fixed; inset:0; background:rgba(10,7,4,0.75); z-index:30; display:none;
+    align-items:flex-end; justify-content:center;}
+  .sheet-overlay.active{display:flex;}
+  .sheet{width:100%; max-width:560px; background:var(--void-2); border-top:1px solid var(--gold);
+    border-radius:14px 14px 0 0; padding:20px 18px 26px; max-height:82vh; overflow-y:auto;}
+  .sheet-header{display:flex; gap:14px; align-items:center;}
+  .sheet-header .portrait-lg{width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Cinzel',serif; font-weight:700; font-size:24px; color:var(--ink); flex-shrink:0;}
+  .sheet-header .info .name{font-size:17px; font-family:'Cinzel',serif; color:var(--gold-bright);}
+  .sheet-header .info .meta{font-size:11.5px; color:#a3987a; margin-top:2px; text-transform:uppercase; letter-spacing:0.06em;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-top:16px;}
+  .stat-row{display:flex; justify-content:space-between; font-size:12.5px; border-bottom:1px solid rgba(201,150,46,0.12); padding-bottom:5px;}
+  .stat-row .v{color:var(--parchment); font-family:'Cinzel',serif; font-size:12px;}
+  .ability-box{margin-top:16px; padding:10px 12px; border-left:2px solid var(--gold); background:rgba(201,150,46,0.05); font-size:12.5px; font-style:italic; color:#c9bd9e;}
+  .lore-box{margin-top:10px; font-size:12px; color:#8a7d5f; line-height:1.5;}
+  .close-sheet{position:absolute; top:14px; right:16px; background:none; border:none; color:#8a7d5f; font-size:20px; cursor:pointer;}
+
+  /* ---------- Idle view ---------- */
+  .idle-card{border:1px solid var(--parchment-edge); border-radius:8px; padding:22px 16px; text-align:center;
+    background:radial-gradient(ellipse at top, rgba(201,150,46,0.1), transparent 70%);}
+  .idle-card .accrued{font-size:32px; color:var(--gold-bright); font-family:'Cinzel',serif; margin:8px 0 2px;}
+  .idle-card .rate{font-size:12px; color:#8a7d5f;}
+  .idle-timer{font-size:11px; color:#6b5f47; margin-top:10px;}
+  .idle-bar-track{height:6px; border-radius:3px; background:rgba(201,150,46,0.12); margin-top:14px; overflow:hidden;}
+  .idle-bar-fill{height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-bright)); width:0%; transition:width 0.3s;}
+
+  /* ---------- Battle view ---------- */
+  .battle-arena{border:1px solid rgba(201,150,46,0.25); border-radius:8px; padding:14px; background:rgba(21,16,9,0.5); min-height:220px;}
+  .team-row{display:flex; justify-content:space-around; margin-bottom:10px;}
+  .unit{width:44px; text-align:center; position:relative;}
+  .unit .u-portrait{width:38px; height:38px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center;
+    font-family:'Cinzel',serif; font-weight:700; font-size:14px; color:var(--ink); position:relative; transition:transform .15s, opacity .3s;}
+  .unit .hp-track{height:4px; background:rgba(0,0,0,0.4); border-radius:2px; margin-top:4px; overflow:hidden;}
+  .unit .hp-fill{height:100%; background:#5aa85a; transition:width .25s;}
+  .unit .pip-track{display:flex; justify-content:center; gap:2px; margin-top:3px;}
+  .unit .pip{width:5px; height:5px; border-radius:50%; background:rgba(201,150,46,0.18); border:1px solid rgba(201,150,46,0.3); transition:background .2s;}
+  .unit .pip.lit{background:var(--gold-bright); box-shadow:0 0 4px var(--gold-bright);}
+  .unit.dead .u-portrait{opacity:0.15; transform:scale(0.85);}
+  .unit.dead .hp-fill{background:#6b3030;}
+  .unit.attacking .u-portrait{transform:scale(1.2); box-shadow:0 0 10px var(--gold-bright);}
+  .unit.hit .u-portrait{animation:shake .25s;}
+  @keyframes shake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-3px);} 75%{transform:translateX(3px);}}
+  .vs-divider{text-align:center; font-family:'Cinzel',serif; color:var(--gold); font-size:11px; letter-spacing:0.2em; margin:4px 0 10px;}
+  .battle-log{margin-top:12px; height:74px; overflow-y:auto; font-size:11px; color:#a3987a; border-top:1px solid rgba(201,150,46,0.15); padding-top:8px; line-height:1.6;}
+  .battle-log div{opacity:0; animation:login .2s forwards;}
+  @keyframes login{to{opacity:1;}}
+  .battle-result{text-align:center; margin-top:14px;}
+  .battle-result .verdict{font-family:'Cinzel',serif; font-size:20px; letter-spacing:0.08em;}
+  .battle-result .verdict.win{color:var(--gold-bright);}
+  .battle-result .verdict.lose{color:var(--blood);}
+
+  .empty-note{font-size:12px; color:#6b5f47; text-align:center; padding:20px 8px; font-style:italic;}
+  .toast{position:fixed; top:14px; left:50%; transform:translateX(-50%); background:var(--void-2); border:1px solid var(--gold);
+    color:var(--parchment); padding:9px 16px; border-radius:5px; font-size:12.5px; z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, top .25s;}
+  .toast.show{opacity:1; top:20px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="title">Chronicle Engine<small>formation template — placeholder roster</small></div>
+    <div class="resources">
+      <div class="res"><span class="icon gold-icon"></span><span id="goldDisplay">0</span></div>
+      <div class="res"><span class="icon relic-icon"></span><span id="relicDisplay">0</span></div>
+    </div>
+  </header>
+
+  <!-- FORMATION / BATTLE -->
+  <section class="view active" id="view-formation">
+    <div class="stage-banner">
+      <div class="chapter">Chapter I · The Long Road</div>
+      <div class="stage-num" id="stageNum">Stage 1</div>
+      <div class="stage-name" id="stageName">Wayfarer's Crossing</div>
+    </div>
+
+    <div class="section-title">Formation</div>
+    <div class="formation-wrap">
+      <div class="formation-grid">
+        <div class="formation-row back">
+          <div class="slot" data-slot="0"><span class="slot-label">Back</span></div>
+          <div class="slot" data-slot="1"><span class="slot-label">Back</span></div>
+        </div>
+        <div class="formation-row front">
+          <div class="slot" data-slot="2"><span class="slot-label">Front</span></div>
+          <div class="slot" data-slot="3"><span class="slot-label">Front</span></div>
+          <div class="slot" data-slot="4"><span class="slot-label">Front</span></div>
+        </div>
+      </div>
+      <div class="power-line">
+        <span>Formation Power</span>
+        <span class="val" id="formationPower">0</span>
+      </div>
+    </div>
+
+    <button class="primary" id="battleBtn">Engage</button>
+
+    <div class="section-title" style="margin-top:26px;">Battle Report</div>
+    <div class="battle-arena" id="battleArena">
+      <div class="empty-note">Fill your formation and engage to see the battle here.</div>
+    </div>
+  </section>
+
+  <!-- ROSTER -->
+  <section class="view" id="view-roster">
+    <div class="section-title">Your Roster</div>
+    <div class="roster-grid" id="rosterGrid"></div>
+    <div class="section-title">Undiscovered</div>
+    <div class="roster-grid" id="lockedGrid"></div>
+  </section>
+
+  <!-- IDLE -->
+  <section class="view" id="view-idle">
+    <div class="section-title">Idle Chronicle</div>
+    <div class="idle-card">
+      <div class="rate">Accrued while away</div>
+      <div class="accrued"><span id="idleAccrued">0</span> gold</div>
+      <div class="rate" id="idleRate">0 gold / min from your formation</div>
+      <button class="primary" id="claimBtn">Claim</button>
+      <div class="idle-bar-track"><div class="idle-bar-fill" id="idleBarFill"></div></div>
+      <div class="idle-timer" id="idleTimer">Capped at 8 hours of accrual</div>
+    </div>
+    <div class="section-title">How idle gold works</div>
+    <div class="lore-box" style="padding:0 4px;">
+      Every hero in your active formation contributes gold per minute based on its power.
+      Progress accrues even while the page is closed — reopen and claim what was earned, up to the cap.
+      Swap in stronger heroes or level up your roster to raise your rate.
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-view="formation"><span class="dot"></span>Formation</button>
+    <button class="tab-btn" data-view="roster"><span class="dot"></span>Roster</button>
+    <button class="tab-btn" data-view="idle"><span class="dot"></span>Idle</button>
+  </nav>
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay">
+  <div class="sheet" id="sheetContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   CHRONICLE ENGINE — theme-agnostic idle/formation battler template
+   -------------------------------------------------------------------------
+   HOW TO RESKIN:
+   1. Edit HERO_DATABASE below — swap name/role/rarity/lore/emoji per hero.
+      Nothing else in the engine needs to change for a new theme.
+   2. Edit STAGES for enemy waves / stage names.
+   3. Colors/fonts are CSS variables at the top of <style> — edit --gold,
+      --parchment, font-family imports, etc. to reskin the whole visual style.
+   ========================================================================= */
+
+// ---------- 1. HERO DATABASE (placeholder — swap freely) ----------
+// Each hero has a base kit (stats) and an `ultimate`: a data-driven special
+// move that charges over `cooldown` turns and fires automatically in battle.
+// See EFFECT DISPATCH (section 11a) for what each `type` does mechanically.
+const RARITY_ORDER = ["common","uncommon","rare","epic","legendary"];
+const RARITY_MULT  = { common:1, uncommon:1.25, rare:1.6, epic:2.1, legendary:2.8 };
+const ROLE_ICONS = { Guardian:"🛡", Ranger:"🏹", Support:"✚", Mystic:"✨", Striker:"⚔" };
+
+const HERO_DATABASE = [
+  // -------- COMMON --------
+  { id:"h01", name:"Ashwake Sentinel",  role:"Guardian", rarity:"common", emoji:"🛡",
+    base:{hp:120,atk:14,def:18,spd:8},
+    ultimate:{ name:"Bulwark Stance", cooldown:4, type:"shield_lowest_ally", value:2.4, duration:2,
+      desc:"Shields the lowest-HP ally, absorbing damage for 2 turns." },
+    lore:"A watchman of the old crossings, said to have never once left a post unguarded." },
+  { id:"h02", name:"Reedmarsh Archer",  role:"Ranger", rarity:"common", emoji:"🏹",
+    base:{hp:80, atk:20,def:8, spd:14},
+    ultimate:{ name:"Twin Loose", cooldown:3, type:"double_strike", value:0.75,
+      desc:"Fires twice at the weakest enemy, each hit at 75% attack power." },
+    lore:"Trained among the marsh villages, where a wasted arrow meant a hungry winter." },
+  { id:"h11", name:"Copperline Duelist",role:"Striker", rarity:"common", emoji:"⚔",
+    base:{hp:90, atk:19,def:10,spd:13},
+    ultimate:{ name:"Riposte Cut", cooldown:3, type:"execute_bonus", value:1.3,
+      desc:"A precise strike that deals extra damage to a badly wounded target." },
+    lore:"Settles every dispute on the practice yard, win or lose, with a bow." },
+  { id:"h12", name:"Thistledown Medic", role:"Support", rarity:"common", emoji:"✚",
+    base:{hp:96, atk:10,def:12,spd:12},
+    ultimate:{ name:"Field Dressing", cooldown:3, type:"heal_lowest_ally", value:1.6,
+      desc:"Mends the lowest-HP ally for a burst of healing." },
+    lore:"Carries more bandages than rations, and has never once run short." },
+
+  // -------- UNCOMMON --------
+  { id:"h03", name:"Cinderhearth Cook", role:"Support", rarity:"uncommon", emoji:"🔥",
+    base:{hp:95, atk:11,def:12,spd:11},
+    ultimate:{ name:"Hearth Blessing", cooldown:4, type:"heal_lowest_ally", value:2.2,
+      desc:"A hearty meal restores a large chunk of an ally's health." },
+    lore:"Kept the caravans fed through three famines; her kettle never truly went cold." },
+  { id:"h04", name:"Hollow Vale Scout", role:"Ranger", rarity:"uncommon", emoji:"🗺",
+    base:{hp:88, atk:19,def:9, spd:16},
+    ultimate:{ name:"Marked Prey", cooldown:4, type:"burn_target", value:0.55, duration:3,
+      desc:"Marks the target, dealing damage over 3 turns." },
+    lore:"Maps the unmapped valleys, trading rumors for safe passage." },
+  { id:"h13", name:"Emberfall Skirmisher",role:"Striker", rarity:"uncommon", emoji:"🔪",
+    base:{hp:98, atk:21,def:11,spd:15},
+    ultimate:{ name:"Flurry", cooldown:4, type:"double_strike", value:0.9,
+      desc:"Two rapid cuts, each hitting hard." },
+    lore:"Learned to fight in the cinder-pits, where a slow blade meant a burn." },
+  { id:"h14", name:"Palewood Seer",     role:"Mystic", rarity:"uncommon", emoji:"🔮",
+    base:{hp:90, atk:20,def:10,spd:13},
+    ultimate:{ name:"Foresight Strike", cooldown:4, type:"aoe_damage", value:0.45,
+      desc:"A vision of the battle lets her strike every enemy at once." },
+    lore:"Speaks in half-finished sentences — the endings, she says, haven't happened yet." },
+
+  // -------- RARE --------
+  { id:"h05", name:"Graniteborn Shield",role:"Guardian", rarity:"rare", emoji:"🪨",
+    base:{hp:150,atk:15,def:26,spd:7},
+    ultimate:{ name:"Unyielding Wall", cooldown:5, type:"shield_lowest_ally", value:3.2, duration:3,
+      desc:"A massive shield that holds for 3 turns." },
+    lore:"Carved from the same quarry as the old gate towers, and just as stubborn." },
+  { id:"h06", name:"Windward Cantor",   role:"Support", rarity:"rare", emoji:"🎵",
+    base:{hp:92, atk:13,def:11,spd:15},
+    ultimate:{ name:"Rallying Verse", cooldown:5, type:"buff_team_atk", value:1.22, duration:3,
+      desc:"A rousing hymn boosts the whole formation's attack for 3 turns." },
+    lore:"Her hymns carried across three valleys before the roads were paved." },
+  { id:"h15", name:"Longshore Breaker", role:"Striker", rarity:"rare", emoji:"🌊",
+    base:{hp:132,atk:24,def:15,spd:11},
+    ultimate:{ name:"Undertow", cooldown:4, type:"stun_random_enemy", duration:1, value:1,
+      desc:"Sweeps a random enemy off balance, stunning them for a turn." },
+    lore:"Fought the tide long enough to learn its rhythm, and its temper." },
+  { id:"h16", name:"Verdant Warden",    role:"Mystic", rarity:"rare", emoji:"🌿",
+    base:{hp:118,atk:22,def:14,spd:12},
+    ultimate:{ name:"Bramble Curse", cooldown:5, type:"burn_target", value:0.8, duration:3,
+      desc:"Binds the target in thorns, dealing heavy damage over time." },
+    lore:"Guards the last untouched grove, and the grove guards her back." },
+
+  // -------- EPIC --------
+  { id:"h07", name:"Duskfen Warden",    role:"Guardian", rarity:"epic", emoji:"🌑",
+    base:{hp:175,atk:18,def:24,spd:10},
+    ultimate:{ name:"Nightbind Ward", cooldown:4, type:"shield_lowest_ally", value:3.6, duration:2,
+      desc:"Wreathes an ally in shadow-forged armor." },
+    lore:"Chose exile at the fen's edge, and turned it into a fortress." },
+  { id:"h08", name:"Starfall Oracle",   role:"Mystic", rarity:"epic", emoji:"✨",
+    base:{hp:100,atk:24,def:13,spd:13},
+    ultimate:{ name:"Falling Star", cooldown:4, type:"execute_bonus", value:1.9,
+      desc:"Calls down a devastating blow, stronger against wounded foes." },
+    lore:"Reads the fallen embers of old signal-fires like scripture." },
+  { id:"h17", name:"Ferrowake Vanguard",role:"Striker", rarity:"epic", emoji:"⚡",
+    base:{hp:140,atk:27,def:16,spd:16},
+    ultimate:{ name:"Storm Onslaught", cooldown:4, type:"aoe_damage", value:0.65,
+      desc:"A whirlwind of strikes crashes into every enemy." },
+    lore:"Outran a lightning storm once, or so the story goes — twice, more likely." },
+
+  // -------- LEGENDARY --------
+  { id:"h09", name:"Ironroot Chieftain",role:"Guardian", rarity:"legendary", emoji:"👑",
+    base:{hp:210,atk:22,def:30,spd:9},
+    ultimate:{ name:"Unbroken Line", cooldown:5, type:"revive_ally", value:0.35,
+      desc:"Rallies a fallen ally back into the fight at partial health." },
+    lore:"United seven scattered clans under one banner, without raising a blade." },
+  { id:"h10", name:"Tidebinder Sage",   role:"Mystic", rarity:"legendary", emoji:"🌊",
+    base:{hp:130,atk:28,def:16,spd:14},
+    ultimate:{ name:"Rising Tide", cooldown:5, type:"aoe_damage", value:0.85,
+      desc:"Unleashes a wave that crashes over every enemy at once." },
+    lore:"Bargained with the river itself to spare a drowning village." },
+];
+
+const ENEMY_NAMES = ["Rustling Wraith","Bramble Stalker","Ashfen Marauder","Gravepath Hound","Sable Cultist","Hollow Effigy","Stormcrow Reaver","Molted Husk"];
+const ENEMY_ULTIMATE = { name:"Feral Onslaught", cooldown:4, type:"aoe_damage", value:0.4, desc:"Every enemy lashes out at once." };
+
+// ---------- 2. STAGE DATA ----------
+const STAGES = [
+  { name:"Wayfarer's Crossing", enemyCount:2, enemyPowerMult:0.75 },
+  { name:"The Salt Flats",      enemyCount:3, enemyPowerMult:0.85 },
+  { name:"Cracked Aqueduct",    enemyCount:3, enemyPowerMult:0.95 },
+  { name:"Ember Watch",         enemyCount:4, enemyPowerMult:1.05 },
+  { name:"The Sunken Archive",  enemyCount:4, enemyPowerMult:1.2  },
+];
+
+// ---------- 3. STATE ----------
+let state = {
+  gold: 200,
+  relics: 0,
+  ownedHeroIds: ["h01","h02","h03","h05"], // starter roster
+  heroLevels: { h01:1, h02:1, h03:1, h05:1 },
+  formation: [null,null,null,null,null], // 5 slots: [back0, back1, front0, front1, front2]
+  stageIndex: 0,
+  lastActiveTs: Date.now(),
+};
+
+const STORAGE_KEY = "chronicle-save";
+const IDLE_CAP_SECONDS = 8*3600;
+const IDLE_GOLD_PER_POWER_PER_MIN = 0.05;
+
+// ---------- 4. PERSISTENCE ----------
+// Uses localStorage — works in any browser and persists across app launches
+// once this is installed as a home-screen PWA.
+async function saveState(){
+  try{
+    state.lastActiveTs = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){ console.error("save failed", e); }
+}
+async function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+    }
+  }catch(e){
+    console.log("no existing save, starting fresh");
+  }
+}
+
+// ---------- 5. HERO HELPERS ----------
+function getHero(id){ return HERO_DATABASE.find(h=>h.id===id); }
+function heroLevel(id){ return state.heroLevels[id] || 1; }
+
+function computedStats(id){
+  const h = getHero(id);
+  const lvl = heroLevel(id);
+  const rMult = RARITY_MULT[h.rarity];
+  const lvlMult = 1 + (lvl-1)*0.12;
+  return {
+    hp:  Math.round(h.base.hp  * rMult * lvlMult),
+    atk: Math.round(h.base.atk * rMult * lvlMult),
+    def: Math.round(h.base.def * rMult * lvlMult),
+    spd: Math.round(h.base.spd * (1 + (rMult-1)*0.3)), // speed scales gently with rarity, not level
+  };
+}
+function heroPower(id){
+  const s = computedStats(id);
+  return Math.round(s.hp*0.4 + s.atk*3 + s.def*2.2 + s.spd*1.5);
+}
+function levelUpCost(id){
+  const lvl = heroLevel(id);
+  const h = getHero(id);
+  return Math.round(30 * lvl * RARITY_MULT[h.rarity]);
+}
+
+// ---------- 6. RENDER: HEADER ----------
+function renderHeader(){
+  document.getElementById("goldDisplay").textContent = Math.floor(state.gold).toLocaleString();
+  document.getElementById("relicDisplay").textContent = state.relics;
+}
+
+// ---------- 7. RENDER: FORMATION ----------
+function formationPower(){
+  return state.formation.reduce((sum,id)=> sum + (id ? heroPower(id) : 0), 0);
+}
+function renderFormation(){
+  document.querySelectorAll(".slot").forEach(slot=>{
+    const idx = +slot.dataset.slot;
+    const heroId = state.formation[idx];
+    const label = slot.querySelector(".slot-label");
+    slot.innerHTML = "";
+    if(label) slot.appendChild(label);
+    if(heroId){
+      const h = getHero(heroId);
+      slot.classList.add("filled");
+      slot.style.borderColor = `var(--c-${h.rarity})`;
+      const icon = document.createElement("div");
+      icon.className = "hero-icon";
+      icon.style.background = `radial-gradient(circle at 35% 30%, var(--c-${h.rarity}), color-mix(in srgb, var(--c-${h.rarity}) 60%, black))`;
+      icon.textContent = h.emoji;
+      slot.appendChild(icon);
+      const lv = document.createElement("div");
+      lv.className = "lv-badge";
+      lv.textContent = "Lv" + heroLevel(heroId);
+      slot.appendChild(lv);
+    } else {
+      slot.classList.remove("filled");
+      slot.style.borderColor = "";
+    }
+  });
+  document.getElementById("formationPower").textContent = formationPower().toLocaleString();
+  document.getElementById("stageNum").textContent = "Stage " + (state.stageIndex+1);
+  document.getElementById("stageName").textContent = STAGES[Math.min(state.stageIndex, STAGES.length-1)].name;
+  const engaged = state.formation.some(x=>x);
+  document.getElementById("battleBtn").disabled = !engaged;
+}
+
+// ---------- 8. RENDER: ROSTER ----------
+function renderRoster(){
+  const ownedGrid = document.getElementById("rosterGrid");
+  const lockedGrid = document.getElementById("lockedGrid");
+  ownedGrid.innerHTML = "";
+  lockedGrid.innerHTML = "";
+  HERO_DATABASE.forEach(h=>{
+    const owned = state.ownedHeroIds.includes(h.id);
+    const card = document.createElement("div");
+    card.className = "hero-card" + (owned?"":" locked");
+    card.innerHTML = `
+      <div class="portrait" style="background:radial-gradient(circle at 35% 30%, var(--c-${h.rarity}), color-mix(in srgb, var(--c-${h.rarity}) 55%, black));">${owned?h.emoji:"?"}</div>
+      <div class="name">${owned?h.name:"???"}</div>
+      <div class="rarity-label" style="color:var(--c-${h.rarity});">${h.rarity}</div>
+      ${owned?`<div class="lv">${ROLE_ICONS[h.role]} Lv ${heroLevel(h.id)} · Pwr ${heroPower(h.id)}</div>`:""}
+    `;
+    if(owned){
+      card.addEventListener("click", ()=> openHeroSheet(h.id));
+      ownedGrid.appendChild(card);
+    } else {
+      lockedGrid.appendChild(card);
+    }
+  });
+}
+
+// ---------- 9. HERO DETAIL SHEET ----------
+function openHeroSheet(id){
+  const h = getHero(id);
+  const s = computedStats(id);
+  const cost = levelUpCost(id);
+  const inFormation = state.formation.includes(id);
+  const sheet = document.getElementById("sheetContent");
+  sheet.innerHTML = `
+    <button class="close-sheet" id="closeSheet">&times;</button>
+    <div class="sheet-header">
+      <div class="portrait-lg" style="background:radial-gradient(circle at 35% 30%, var(--c-${h.rarity}), color-mix(in srgb, var(--c-${h.rarity}) 55%, black));">${h.emoji}</div>
+      <div class="info">
+        <div class="name">${h.name}</div>
+        <div class="meta">${h.role} · <span style="color:var(--c-${h.rarity})">${h.rarity}</span> · Lv ${heroLevel(id)}</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-row"><span>Health</span><span class="v">${s.hp}</span></div>
+      <div class="stat-row"><span>Attack</span><span class="v">${s.atk}</span></div>
+      <div class="stat-row"><span>Defense</span><span class="v">${s.def}</span></div>
+      <div class="stat-row"><span>Speed</span><span class="v">${s.spd}</span></div>
+    </div>
+    <div class="ability-box"><strong style="color:var(--gold-bright);">${h.ultimate.name}</strong> · charges in ${h.ultimate.cooldown} turns<br>${h.ultimate.desc}</div>
+    <div class="lore-box">${h.lore}</div>
+    <button class="primary" id="levelUpBtn">Level Up — ${cost} gold</button>
+    <button class="secondary" id="formationBtn">${inFormation ? "Remove from Formation" : "Add to Formation"}</button>
+  `;
+  document.getElementById("sheetOverlay").classList.add("active");
+  document.getElementById("closeSheet").onclick = closeSheet;
+  document.getElementById("levelUpBtn").onclick = ()=>{
+    if(state.gold >= cost){
+      state.gold -= cost;
+      state.heroLevels[id] = (state.heroLevels[id]||1)+1;
+      saveState();
+      renderAll();
+      openHeroSheet(id); // refresh sheet with new stats/cost
+      showToast(`${h.name} advanced to Lv ${state.heroLevels[id]}`);
+    } else {
+      showToast("Not enough gold");
+    }
+  };
+  document.getElementById("formationBtn").onclick = ()=>{
+    if(inFormation){
+      const idx = state.formation.indexOf(id);
+      state.formation[idx] = null;
+    } else {
+      const emptyIdx = state.formation.indexOf(null);
+      if(emptyIdx === -1){ showToast("Formation is full"); return; }
+      state.formation[emptyIdx] = id;
+    }
+    saveState();
+    renderAll();
+    closeSheet();
+  };
+}
+function closeSheet(){ document.getElementById("sheetOverlay").classList.remove("active"); }
+
+// ---------- 10. SLOT TAP → open a picker (reuses roster selection) ----------
+function openSlotPicker(slotIdx){
+  const owned = state.ownedHeroIds;
+  if(owned.length === 0){ showToast("No heroes recruited yet"); return; }
+  const sheet = document.getElementById("sheetContent");
+  const currentId = state.formation[slotIdx];
+  sheet.innerHTML = `
+    <button class="close-sheet" id="closeSheet">&times;</button>
+    <div class="section-title" style="margin-top:0;">Assign to Slot</div>
+    <div class="roster-grid" id="pickerGrid"></div>
+    ${currentId ? '<button class="secondary" id="clearSlotBtn">Clear Slot</button>' : ""}
+  `;
+  const grid = document.getElementById("pickerGrid");
+  owned.forEach(id=>{
+    const h = getHero(id);
+    const usedElsewhere = state.formation.includes(id) && state.formation[slotIdx] !== id;
+    const card = document.createElement("div");
+    card.className = "hero-card" + (usedElsewhere ? " locked" : "") + (state.formation[slotIdx]===id ? " selected":"");
+    card.innerHTML = `
+      <div class="portrait" style="background:radial-gradient(circle at 35% 30%, var(--c-${h.rarity}), color-mix(in srgb, var(--c-${h.rarity}) 55%, black));">${h.emoji}</div>
+      <div class="name">${h.name}</div>
+      <div class="rarity-label" style="color:var(--c-${h.rarity});">${h.rarity}</div>
+      <div class="lv">Lv ${heroLevel(id)} · Pwr ${heroPower(id)}</div>
+    `;
+    if(!usedElsewhere){
+      card.addEventListener("click", ()=>{
+        state.formation[slotIdx] = id;
+        saveState(); renderAll(); closeSheet();
+      });
+    }
+    grid.appendChild(card);
+  });
+  document.getElementById("sheetOverlay").classList.add("active");
+  document.getElementById("closeSheet").onclick = closeSheet;
+  const clearBtn = document.getElementById("clearSlotBtn");
+  if(clearBtn) clearBtn.onclick = ()=>{
+    state.formation[slotIdx] = null;
+    saveState(); renderAll(); closeSheet();
+  };
+}
+
+// ---------- 11. BATTLE SIMULATION ----------
+function makeEnemyWave(stage){
+  const units = [];
+  const basePower = 60 + state.stageIndex*22;
+  for(let i=0;i<stage.enemyCount;i++){
+    const p = basePower * stage.enemyPowerMult * (0.85 + Math.random()*0.3);
+    units.push({
+      id: "e"+i,
+      name: ENEMY_NAMES[Math.floor(Math.random()*ENEMY_NAMES.length)],
+      isEnemy: true,
+      hp: Math.round(p*2.2), maxHp: Math.round(p*2.2),
+      atk: Math.round(p*0.35), def: Math.round(p*0.22), spd: 6+Math.round(Math.random()*8),
+      emoji: "👹",
+      shield:0, stunTurns:0, burn:null, atkBuff:null,
+      ultimate: ENEMY_ULTIMATE, ultCounter: Math.floor(Math.random()*2),
+    });
+  }
+  return units;
+}
+function makePlayerUnits(){
+  return state.formation.filter(x=>x).map(id=>{
+    const h = getHero(id);
+    const s = computedStats(id);
+    return {
+      id, name:h.name, isEnemy:false, hp:s.hp, maxHp:s.hp, atk:s.atk, def:s.def, spd:s.spd,
+      emoji:h.emoji, rarity:h.rarity, role:h.role,
+      shield:0, stunTurns:0, burn:null, atkBuff:null,
+      ultimate: h.ultimate, ultCounter:0,
+    };
+  });
+}
+
+// ---------- 11a. EFFECT DISPATCH ----------
+// Every ultimate resolves through here. `caster` used its move; `allies` are
+// its own side (alive or not — filter as needed), `enemies` the opposing side.
+function lowestHpUnit(list){
+  const alive = list.filter(u=>u.hp>0);
+  if(!alive.length) return null;
+  return alive.reduce((low,u)=> (u.hp/u.maxHp) < (low.hp/low.maxHp) ? u : low, alive[0]);
+}
+function dealDamage(caster, target, mult, log, tag){
+  const buffMult = caster.atkBuff && caster.atkBuff.turns>0 ? caster.atkBuff.mult : 1;
+  const raw = Math.max(3, caster.atk*buffMult*mult - target.def*0.5);
+  let dmg = Math.round(raw * (0.9+Math.random()*0.2));
+  let shieldNote = "";
+  if(target.shield>0){
+    const absorbed = Math.min(target.shield, dmg);
+    target.shield -= absorbed;
+    dmg -= absorbed;
+    if(absorbed>0) shieldNote = ` (${absorbed} absorbed by shield)`;
+  }
+  target.hp = Math.max(0, target.hp-dmg);
+  log.push({ kind:tag||"attack", actor:caster.name, target:target.name, dmg, actorIsEnemy:caster.isEnemy,
+    targetId:target.id, actorId:caster.id, fainted: target.hp<=0, note:shieldNote });
+}
+function applyUltimate(caster, allies, enemies, log){
+  const u = caster.ultimate;
+  const aliveAllies = allies.filter(x=>x.hp>0);
+  const aliveEnemies = enemies.filter(x=>x.hp>0);
+  log.push({ kind:"ultimate-banner", actor:caster.name, actorIsEnemy:caster.isEnemy, ultName:u.name });
+
+  switch(u.type){
+    case "shield_lowest_ally": {
+      const t = lowestHpUnit(aliveAllies) || caster;
+      t.shield += Math.round(caster.def * u.value);
+      log.push({ kind:"shield", actor:caster.name, target:t.name, amount:Math.round(caster.def*u.value), actorIsEnemy:caster.isEnemy, targetId:t.id });
+      break;
+    }
+    case "heal_lowest_ally": {
+      const t = lowestHpUnit(aliveAllies) || caster;
+      const heal = Math.round(caster.atk * u.value);
+      t.hp = Math.min(t.maxHp, t.hp+heal);
+      log.push({ kind:"heal", actor:caster.name, target:t.name, amount:heal, actorIsEnemy:caster.isEnemy, targetId:t.id });
+      break;
+    }
+    case "buff_team_atk": {
+      aliveAllies.forEach(a=> a.atkBuff = { mult:u.value, turns:u.duration });
+      log.push({ kind:"buff", actor:caster.name, actorIsEnemy:caster.isEnemy, note:`formation attack rises` });
+      break;
+    }
+    case "burn_target": {
+      const t = lowestHpUnit(aliveEnemies);
+      if(t){ t.burn = { dmg: Math.round(caster.atk*u.value), turns:u.duration }; 
+        log.push({ kind:"debuff", actor:caster.name, target:t.name, actorIsEnemy:caster.isEnemy, targetId:t.id, note:"is marked, taking damage over time" }); }
+      break;
+    }
+    case "stun_random_enemy": {
+      if(aliveEnemies.length){
+        const t = aliveEnemies[Math.floor(Math.random()*aliveEnemies.length)];
+        t.stunTurns += u.duration;
+        log.push({ kind:"debuff", actor:caster.name, target:t.name, actorIsEnemy:caster.isEnemy, targetId:t.id, note:"is stunned" });
+      }
+      break;
+    }
+    case "aoe_damage": {
+      aliveEnemies.forEach(t=> dealDamage(caster, t, u.value, log, "ultimate-hit"));
+      break;
+    }
+    case "double_strike": {
+      const t = lowestHpUnit(aliveEnemies);
+      if(t) dealDamage(caster, t, u.value, log, "ultimate-hit");
+      const t2 = lowestHpUnit(enemies); // re-check in case first hit felled it
+      if(t2) dealDamage(caster, t2, u.value, log, "ultimate-hit");
+      break;
+    }
+    case "execute_bonus": {
+      const t = lowestHpUnit(aliveEnemies);
+      if(t){
+        const hpPct = t.hp/t.maxHp;
+        const bonus = hpPct < 0.4 ? u.value*1.5 : u.value;
+        dealDamage(caster, t, bonus, log, "ultimate-hit");
+      }
+      break;
+    }
+    case "revive_ally": {
+      const fallen = allies.filter(x=>x.hp<=0);
+      if(fallen.length){
+        const t = fallen[0];
+        t.hp = Math.round(t.maxHp*u.value);
+        log.push({ kind:"revive", actor:caster.name, target:t.name, actorIsEnemy:caster.isEnemy, targetId:t.id });
+      } else {
+        const t = lowestHpUnit(aliveAllies) || caster;
+        t.hp = Math.min(t.maxHp, t.hp + Math.round(caster.atk*1.2));
+        log.push({ kind:"heal", actor:caster.name, target:t.name, amount:Math.round(caster.atk*1.2), actorIsEnemy:caster.isEnemy, targetId:t.id });
+      }
+      break;
+    }
+  }
+}
+
+function runBattle(){
+  const stage = STAGES[Math.min(state.stageIndex, STAGES.length-1)];
+  const playerUnits = makePlayerUnits();
+  const enemyUnits = makeEnemyWave(stage);
+  const log = [];
+
+  let turnCount = 0;
+  const MAX_TURNS = 60;
+
+  while(turnCount < MAX_TURNS){
+    const alivePlayers = playerUnits.filter(u=>u.hp>0);
+    const aliveEnemies = enemyUnits.filter(u=>u.hp>0);
+    if(alivePlayers.length===0 || aliveEnemies.length===0) break;
+
+    const allUnits = [...playerUnits, ...enemyUnits];
+    const turnOrder = [...allUnits].sort((a,b)=>b.spd-a.spd);
+
+    for(const unit of turnOrder){
+      if(unit.hp<=0) continue;
+      const allies = unit.isEnemy ? enemyUnits : playerUnits;
+      const enemies = unit.isEnemy ? playerUnits : enemyUnits;
+
+      // status: burn tick
+      if(unit.burn && unit.burn.turns>0){
+        unit.hp = Math.max(0, unit.hp - unit.burn.dmg);
+        log.push({ kind:"burn-tick", actor:unit.name, dmg:unit.burn.dmg, actorIsEnemy:unit.isEnemy, targetId:unit.id, fainted: unit.hp<=0 });
+        unit.burn.turns--;
+        if(unit.hp<=0) continue;
+      }
+      // status: stun
+      if(unit.stunTurns>0){
+        unit.stunTurns--;
+        log.push({ kind:"stun-tick", actor:unit.name, actorIsEnemy:unit.isEnemy });
+        continue;
+      }
+      // decay atk buff
+      if(unit.atkBuff){ unit.atkBuff.turns--; if(unit.atkBuff.turns<=0) unit.atkBuff=null; }
+
+      const targets = enemies.filter(u=>u.hp>0);
+      if(targets.length===0) continue;
+
+      unit.ultCounter = (unit.ultCounter||0) + 1;
+      if(unit.ultimate && unit.ultCounter >= unit.ultimate.cooldown){
+        unit.ultCounter = 0;
+        applyUltimate(unit, allies, enemies, log);
+      } else {
+        const target = lowestHpUnit(targets);
+        dealDamage(unit, target, 1, log, "attack");
+      }
+      turnCount++;
+      if(playerUnits.every(u=>u.hp<=0) || enemyUnits.every(u=>u.hp<=0)) break;
+    }
+  }
+
+  const won = playerUnits.some(u=>u.hp>0) && enemyUnits.every(u=>u.hp<=0);
+  return { playerUnits, enemyUnits, log, won };
+}
+
+function renderBattle(){
+  const result = runBattle();
+  const arena = document.getElementById("battleArena");
+  arena.innerHTML = `
+    <div class="team-row" id="enemyRow"></div>
+    <div class="vs-divider">VS</div>
+    <div class="team-row" id="playerRow"></div>
+    <div class="battle-log" id="battleLog"></div>
+    <div class="battle-result" id="battleResult"></div>
+  `;
+  const enemyRow = document.getElementById("enemyRow");
+  const playerRow = document.getElementById("playerRow");
+
+  function unitEl(u){
+    const el = document.createElement("div");
+    el.className = "unit";
+    el.dataset.uid = u.id;
+    const pipCount = u.ultimate ? u.ultimate.cooldown : 0;
+    let pips = "";
+    for(let p=0;p<pipCount;p++) pips += `<span class="pip" data-pip="${p}"></span>`;
+    el.innerHTML = `
+      <div class="u-portrait" style="background:${u.isEnemy ? 'radial-gradient(circle at 35% 30%, #8a4a4a, #3a1a1a)' : `radial-gradient(circle at 35% 30%, var(--c-${u.rarity||'common'}), black)`};">${u.emoji}</div>
+      <div class="hp-track"><div class="hp-fill" style="width:100%"></div></div>
+      <div class="pip-track">${pips}</div>
+    `;
+    return el;
+  }
+  result.enemyUnits.forEach(u=> enemyRow.appendChild(unitEl(u)));
+  result.playerUnits.forEach(u=> playerRow.appendChild(unitEl(u)));
+
+  // replay the log with light animation timing
+  const logEl = document.getElementById("battleLog");
+  const liveHp = {}, liveCounter = {};
+  [...result.playerUnits, ...result.enemyUnits].forEach(u=>{ liveHp[u.id]=u.maxHp; liveCounter[u.id]=0; });
+  const findUnit = id => [...result.playerUnits,...result.enemyUnits].find(u=>u.id===id);
+
+  function setHpBar(id){
+    const el = arena.querySelector(`[data-uid="${id}"]`);
+    if(!el) return;
+    const maxHp = findUnit(id).maxHp;
+    const pct = Math.max(0,(liveHp[id]/maxHp)*100);
+    el.querySelector(".hp-fill").style.width = pct+"%";
+    if(liveHp[id]<=0) el.classList.add("dead");
+  }
+  function bumpPips(id, reset){
+    const el = arena.querySelector(`[data-uid="${id}"]`);
+    if(!el) return;
+    const pipEls = el.querySelectorAll(".pip");
+    if(reset){ pipEls.forEach(p=>p.classList.remove("lit")); return; }
+    liveCounter[id] = (liveCounter[id]||0)+1;
+    pipEls.forEach((p,idx)=>{ if(idx < liveCounter[id]) p.classList.add("lit"); });
+  }
+  function flash(id, cls){
+    const el = arena.querySelector(`[data-uid="${id}"]`);
+    if(!el) return;
+    el.classList.add(cls);
+    setTimeout(()=>el.classList.remove(cls), 300);
+  }
+
+  let i=0;
+  function step(){
+    if(i>=result.log.length){
+      finishBattle(result.won);
+      return;
+    }
+    const entry = result.log[i];
+    const line = document.createElement("div");
+
+    switch(entry.kind){
+      case "attack":
+        liveHp[entry.targetId] = Math.max(0, liveHp[entry.targetId]-entry.dmg);
+        setHpBar(entry.targetId); flash(entry.targetId,"hit"); flash(entry.actorId,"attacking");
+        bumpPips(entry.actorId,false);
+        line.textContent = `${entry.actor} strikes ${entry.target} for ${entry.dmg}${entry.note||""}${entry.fainted?" — fallen":""}`;
+        break;
+      case "ultimate-banner":
+        line.innerHTML = `<span style="color:var(--gold-bright);">★ ${entry.actor} unleashes ${entry.ultName}!</span>`;
+        bumpPips(entry.actorId, true);
+        break;
+      case "ultimate-hit":
+        liveHp[entry.targetId] = Math.max(0, liveHp[entry.targetId]-entry.dmg);
+        setHpBar(entry.targetId); flash(entry.targetId,"hit"); flash(entry.actorId,"attacking");
+        line.innerHTML = `<span style="color:var(--gold-bright);">${entry.actor} hits ${entry.target} for ${entry.dmg}${entry.note||""}${entry.fainted?" — fallen":""}</span>`;
+        break;
+      case "heal":
+        liveHp[entry.targetId] = Math.min(findUnit(entry.targetId).maxHp, liveHp[entry.targetId]+entry.amount);
+        setHpBar(entry.targetId);
+        line.innerHTML = `<span style="color:#7fbf7f;">${entry.actor} heals ${entry.target} for ${entry.amount}</span>`;
+        break;
+      case "shield":
+        line.innerHTML = `<span style="color:#8fb8e0;">${entry.actor} shields ${entry.target} (+${entry.amount})</span>`;
+        break;
+      case "buff":
+        line.innerHTML = `<span style="color:var(--gold-bright);">${entry.actor}'s formation attack rises</span>`;
+        break;
+      case "debuff":
+        line.innerHTML = `<span style="color:#c98a5a;">${entry.target} ${entry.note}</span>`;
+        break;
+      case "revive":
+        liveHp[entry.targetId] = findUnit(entry.targetId).hp;
+        setHpBar(entry.targetId);
+        line.innerHTML = `<span style="color:var(--gold-bright);">${entry.target} is rallied back into the fight</span>`;
+        break;
+      case "burn-tick":
+        liveHp[entry.targetId] = Math.max(0, liveHp[entry.targetId]-entry.dmg);
+        setHpBar(entry.targetId); flash(entry.targetId,"hit");
+        line.innerHTML = `<span style="color:#c98a5a;">${entry.actor} suffers ${entry.dmg} from the mark${entry.fainted?" — fallen":""}</span>`;
+        break;
+      case "stun-tick":
+        line.innerHTML = `<span style="color:#c9bd9e;">${entry.actor} is stunned and cannot act</span>`;
+        break;
+    }
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+    i++;
+    setTimeout(step, 260);
+  }
+  step();
+}
+
+function finishBattle(won){
+  const resultEl = document.getElementById("battleResult");
+  if(won){
+    const goldReward = 25 + state.stageIndex*8;
+    state.gold += goldReward;
+    if(state.stageIndex < STAGES.length-1) state.stageIndex++;
+    resultEl.innerHTML = `<div class="verdict win">Victory</div><div style="font-size:12px;color:#a3987a;margin-top:4px;">+${goldReward} gold · advancing to stage ${state.stageIndex+1}</div>`;
+    if(Math.random()<0.35){
+      const undiscovered = HERO_DATABASE.filter(h=>!state.ownedHeroIds.includes(h.id));
+      if(undiscovered.length){
+        const recruit = undiscovered[Math.floor(Math.random()*undiscovered.length)];
+        state.ownedHeroIds.push(recruit.id);
+        state.heroLevels[recruit.id] = 1;
+        resultEl.innerHTML += `<div style="font-size:12px;color:var(--gold-bright);margin-top:6px;">New hero recruited: ${recruit.name}</div>`;
+      }
+    }
+  } else {
+    resultEl.innerHTML = `<div class="verdict lose">Defeat</div><div style="font-size:12px;color:#a3987a;margin-top:4px;">Level up your heroes and try again.</div>`;
+  }
+  saveState();
+  renderHeader();
+  renderFormation();
+  renderRoster();
+}
+
+// ---------- 12. IDLE ----------
+function idleRatePerMin(){
+  return Math.round(formationPower() * IDLE_GOLD_PER_POWER_PER_MIN);
+}
+function computeIdleAccrual(){
+  const elapsedSec = Math.min(IDLE_CAP_SECONDS, (Date.now()-state.lastActiveTs)/1000);
+  const rate = idleRatePerMin();
+  return Math.floor((elapsedSec/60)*rate);
+}
+function renderIdle(){
+  const accrued = computeIdleAccrual();
+  document.getElementById("idleAccrued").textContent = accrued.toLocaleString();
+  document.getElementById("idleRate").textContent = `${idleRatePerMin()} gold / min from your formation`;
+  const elapsedSec = (Date.now()-state.lastActiveTs)/1000;
+  const pct = Math.min(100, (elapsedSec/IDLE_CAP_SECONDS)*100);
+  document.getElementById("idleBarFill").style.width = pct+"%";
+  document.getElementById("idleTimer").textContent = pct>=100 ? "Idle cap reached — claim to keep earning" : "Capped at 8 hours of accrual";
+  document.getElementById("claimBtn").disabled = accrued<=0;
+}
+document.getElementById("claimBtn").addEventListener("click", ()=>{
+  const accrued = computeIdleAccrual();
+  if(accrued>0){
+    state.gold += accrued;
+    state.lastActiveTs = Date.now();
+    saveState();
+    renderAll();
+    showToast(`Claimed ${accrued} gold`);
+  }
+});
+
+// ---------- 13. TOAST ----------
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
+}
+
+// ---------- 14. TAB NAV ----------
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("view-"+btn.dataset.view).classList.add("active");
+    if(btn.dataset.view==="idle") renderIdle();
+  });
+});
+
+// ---------- 15. SLOT CLICKS ----------
+document.querySelectorAll(".slot").forEach(slot=>{
+  slot.addEventListener("click", ()=> openSlotPicker(+slot.dataset.slot));
+});
+
+// ---------- 16. BATTLE BUTTON ----------
+document.getElementById("battleBtn").addEventListener("click", ()=>{
+  document.getElementById("battleBtn").disabled = true;
+  renderBattle();
+  setTimeout(()=>{ document.getElementById("battleBtn").disabled = false; }, 400);
+});
+
+// ---------- 17. MASTER RENDER ----------
+function renderAll(){
+  renderHeader();
+  renderFormation();
+  renderRoster();
+  renderIdle();
+}
+
+// ---------- 18. BOOT ----------
+(async function boot(){
+  await loadState();
+  // default formation on very first run
+  if(state.formation.every(x=>x===null) && state.ownedHeroIds.length){
+    state.formation[2] = state.ownedHeroIds[0] || null;
+    state.formation[3] = state.ownedHeroIds[1] || null;
+    state.formation[4] = state.ownedHeroIds[2] || null;
+  }
+  renderAll();
+  setInterval(renderIdle, 5000);
+  window.addEventListener("beforeunload", saveState);
+})();
+
+// ---------- 19. PWA SERVICE WORKER ----------
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("service-worker.js").catch(err=>{
+      console.log("Service worker registration failed:", err);
+    });
+  });
+}
+</script>
+</body>
+</html>
