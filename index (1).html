@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#151009">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Celestial War">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Celestial War — hero-collecting real-time lane battler.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Celestial War</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root{
+    --ink:#241a12;
+    --parchment:#e9dcb9;
+    --parchment-dark:#d8c79c;
+    --parchment-edge:#b8a271;
+    --void:#151009;
+    --void-2:#1f1710;
+    --gold:#c9962e;
+    --gold-bright:#e8b84b;
+    --blood:#7a2b23;
+
+    --c-common:#8a8172;
+    --c-uncommon:#4f7d4c;
+    --c-rare:#3766a0;
+    --c-epic:#7a4590;
+    --c-legendary:#c9962e;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--void);color:var(--parchment);
+    font-family:'EB Garamond', serif; height:100%; overflow-x:hidden;}
+  #app{max-width:560px;margin:0 auto;min-height:100%;position:relative;
+    background:
+      radial-gradient(ellipse at top, rgba(201,150,46,0.10), transparent 55%),
+      radial-gradient(ellipse at 20% 80%, rgba(122,43,35,0.08), transparent 50%),
+      url("data:image/png;base64,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"),
+      var(--void);
+    background-size:auto, auto, 96px 96px, auto;
+    padding-bottom:78px;}
+
+  h1,h2,h3,.display{font-family:'Cinzel', serif; letter-spacing:0.03em;}
+
+  /* ---------- Header ---------- */
+  header{padding:18px 16px 14px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid rgba(201,150,46,0.25);}
+  header .title{font-size:15px; font-weight:700; color:var(--gold-bright); text-transform:uppercase; letter-spacing:0.12em;}
+  header .title small{display:block; font-family:'EB Garamond',serif; font-style:italic; letter-spacing:0; color:#8a7d5f; font-size:11px; text-transform:none; margin-top:2px;}
+  .resources{display:flex; gap:14px;}
+  .res{display:flex; align-items:center; gap:5px; font-size:13px; color:var(--parchment);}
+  .res .icon{width:16px;height:16px;border-radius:50%;display:inline-block;}
+  .icon.gold-icon{background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold) 60%, #7a5a1a); box-shadow:0 0 6px rgba(201,150,46,0.6);}
+  .icon.relic-icon{background:radial-gradient(circle at 35% 30%, #b8a6e0, #6b4f9e 60%, #3a2860); box-shadow:0 0 6px rgba(107,79,158,0.6);}
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{position:fixed; bottom:0; left:0; right:0; max-width:560px; margin:0 auto;
+    display:flex; background:var(--void-2); border-top:1px solid rgba(201,150,46,0.3); z-index:20;}
+  nav.tabs button{flex:1; background:none; border:none; color:#8a7d5f; font-family:'Cinzel',serif;
+    font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; padding:12px 4px 10px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px; transition:color .15s;}
+  nav.tabs button .dot{width:5px;height:5px;border-radius:50%;background:transparent;}
+  nav.tabs button.active{color:var(--gold-bright);}
+  nav.tabs button.active .dot{background:var(--gold-bright); box-shadow:0 0 6px var(--gold-bright);}
+
+  section.view{padding:16px; display:none;}
+  section.view.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-title{font-size:12px; text-transform:uppercase; letter-spacing:0.14em; color:var(--gold);
+    margin:22px 0 10px; display:flex; align-items:center; gap:8px;}
+  .section-title::after{content:''; flex:1; height:1px; background:linear-gradient(to right, rgba(201,150,46,0.4), transparent);}
+  .section-title:first-child{margin-top:0;}
+
+  /* ---------- Stage banner ---------- */
+  .stage-banner{border:1px solid var(--parchment-edge); background:linear-gradient(180deg, rgba(233,220,185,0.06), rgba(233,220,185,0.02));
+    border-radius:4px; padding:14px; text-align:center; position:relative;}
+  .stage-banner .chapter{font-size:10px; letter-spacing:0.2em; color:#8a7d5f; text-transform:uppercase;}
+  .stage-banner .stage-num{font-size:26px; color:var(--gold-bright); margin:2px 0;}
+  .stage-banner .stage-name{font-style:italic; color:#c9bd9e; font-size:14px;}
+
+  /* ---------- Formation grid ---------- */
+  .formation-wrap{margin-top:14px; position:relative;}
+  .formation-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:22px 10px 18px; position:relative; overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(201,150,46,0.10), transparent 65%),
+      radial-gradient(ellipse at 50% 100%, rgba(122,43,35,0.10), transparent 60%),
+      var(--void-2);
+    border:1px solid rgba(201,150,46,0.25); border-radius:10px;}
+  .formation-grid::before{content:''; position:absolute; inset:8px; border:1px solid rgba(201,150,46,0.12); border-radius:8px; pointer-events:none;}
+  .formation-grid::after{content:''; position:absolute; left:50%; top:50%; width:180%; height:180%; transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg, rgba(201,150,46,0.035) 0deg 2deg, transparent 2deg 15deg);
+    pointer-events:none; opacity:0.6;}
+  .formation-row{grid-column:span 3; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; position:relative; z-index:1;}
+  .formation-row.back{grid-template-columns:repeat(2,1fr); max-width:72%; margin:0 auto 6px;}
+  .slot{aspect-ratio:1; border-radius:14px; border:2px dashed rgba(201,150,46,0.35);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative;
+    background:radial-gradient(circle at 40% 35%, rgba(233,220,185,0.05), rgba(21,16,9,0.55) 70%);
+    transition:transform .12s, border-color .12s; --aura-color:rgba(201,150,46,0.45);}
+  .slot::before{content:''; position:absolute; inset:-5px; border-radius:16px; opacity:0; transition:opacity .2s;
+    box-shadow:0 0 10px 2px var(--aura-color); pointer-events:none;}
+  .slot.filled::before{opacity:1; animation:auraPulse 2.6s ease-in-out infinite;}
+  .slot:active{transform:scale(0.94);}
+  .slot.filled{border-style:solid;}
+  .slot .hero-icon{width:82%; height:82%; display:flex; align-items:flex-end; justify-content:center;
+    position:relative; z-index:1; animation:idleBob 3.2s ease-in-out infinite;}
+  .slot .hero-icon .fighter-svg{filter:drop-shadow(0 0 4px var(--aura-color, rgba(201,150,46,0.5)));}
+  .slot .lv-badge{position:absolute; bottom:-4px; right:-4px; background:var(--void-2); border:1px solid var(--gold);
+    color:var(--gold-bright); font-size:9px; padding:1px 4px; border-radius:8px; font-family:'Cinzel',serif; z-index:2;}
+  .slot .role-tag{position:absolute; top:-3px; left:-3px; font-size:9px;}
+  .slot-label{position:absolute; bottom:-16px; left:0; right:0; text-align:center; font-size:8.5px; letter-spacing:0.1em;
+    text-transform:uppercase; color:#6b5f47; z-index:1;}
+
+  @keyframes idleBob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);}}
+  @keyframes auraPulse{0%,100%{box-shadow:0 0 8px 1px var(--aura-color);} 50%{box-shadow:0 0 16px 5px var(--aura-color);}}
+
+  .power-line{display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-size:13px;}
+  .power-line .val{color:var(--gold-bright); font-family:'Cinzel',serif; font-size:16px;}
+  .synergy-line{display:none; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .synergy-badge{font-size:10px; padding:4px 8px; border-radius:12px; border:1px solid rgba(201,150,46,0.4);
+    background:rgba(201,150,46,0.08); color:var(--gold-bright); letter-spacing:0.02em;}
+
+  button.primary{width:100%; margin-top:14px; padding:13px; border:none; border-radius:4px; cursor:pointer;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:var(--ink); font-family:'Cinzel',serif;
+    font-size:13px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
+    box-shadow:0 3px 0 #7a5a1a, 0 4px 10px rgba(0,0,0,0.4);}
+  button.primary:active{transform:translateY(2px); box-shadow:0 1px 0 #7a5a1a;}
+  button.primary:disabled{opacity:0.4; box-shadow:none;}
+  button.secondary{width:100%; margin-top:8px; padding:11px; border:1px solid var(--parchment-edge); border-radius:4px;
+    background:transparent; color:var(--parchment); font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; cursor:pointer;}
+
+  /* ---------- Roster ---------- */
+  .roster-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:4px;}
+  .hero-card{border:1px solid rgba(201,150,46,0.25); border-radius:6px; padding:8px 6px 10px; text-align:center;
+    background:rgba(233,220,185,0.03); cursor:pointer; position:relative; overflow:hidden;}
+  .hero-card.selected{border-color:var(--gold-bright); box-shadow:0 0 0 1px var(--gold-bright) inset;}
+  .hero-card .portrait{width:52px; height:52px; margin:0 auto 6px; display:flex; align-items:flex-end;
+    justify-content:center; position:relative; animation:idleBob 3.4s ease-in-out infinite;}
+  .hero-card .portrait .fighter-svg{filter:drop-shadow(0 0 5px var(--aura-color, rgba(201,150,46,0.5)));}
+  .hero-card .locked-mark{font-family:'Cinzel',serif; font-weight:700; font-size:20px; color:var(--ink);
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:rgba(233,220,185,0.15); border-radius:50%;}
+  .hero-card .name{font-size:11.5px; color:var(--parchment); line-height:1.2;}
+  .hero-card .rarity-label{font-size:8.5px; text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;}
+  .hero-card .lv{font-size:9px; color:#8a7d5f; margin-top:2px;}
+  .hero-card.locked{opacity:0.35; filter:grayscale(1);}
+
+  /* ---------- Detail sheet ---------- */
+  .sheet-overlay{position:fixed; inset:0; background:rgba(10,7,4,0.75); z-index:30; display:none;
+    align-items:flex-end; justify-content:center;}
+  .sheet-overlay.active{display:flex;}
+  .sheet{width:100%; max-width:560px; background:var(--void-2); border-top:1px solid var(--gold);
+    border-radius:14px 14px 0 0; padding:20px 18px 26px; max-height:82vh; overflow-y:auto;}
+  .sheet-header{display:flex; gap:14px; align-items:center;}
+  .sheet-header .portrait-lg{width:60px; height:88px; display:flex; align-items:flex-end; justify-content:center;
+    flex-shrink:0; animation:idleBob 3.4s ease-in-out infinite;}
+  .sheet-header .portrait-lg .fighter-svg{filter:drop-shadow(0 0 7px var(--aura-color, rgba(201,150,46,0.55)));}
+  .sheet-header .info .name{font-size:17px; font-family:'Cinzel',serif; color:var(--gold-bright);}
+  .sheet-header .info .meta{font-size:11.5px; color:#a3987a; margin-top:2px; text-transform:uppercase; letter-spacing:0.06em;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-top:16px;}
+  .stat-row{display:flex; justify-content:space-between; font-size:12.5px; border-bottom:1px solid rgba(201,150,46,0.12); padding-bottom:5px;}
+  .stat-row .v{color:var(--parchment); font-family:'Cinzel',serif; font-size:12px;}
+  .ability-box{margin-top:16px; padding:10px 12px; border-left:2px solid var(--gold); background:rgba(201,150,46,0.05); font-size:12.5px; font-style:italic; color:#c9bd9e;}
+  .lore-box{margin-top:10px; font-size:12px; color:#8a7d5f; line-height:1.5;}
+  .close-sheet{position:absolute; top:14px; right:16px; background:none; border:none; color:#8a7d5f; font-size:20px; cursor:pointer;}
+
+  /* ---------- Equipment ---------- */
+  .equip-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .equip-slot{border:1px solid rgba(201,150,46,0.25); border-radius:6px; padding:9px 6px; text-align:center; cursor:pointer; background:rgba(233,220,185,0.02);}
+  .equip-slot.filled{border-color:rgba(201,150,46,0.5);}
+  .equip-slot-label{font-size:9px; text-transform:uppercase; letter-spacing:0.1em; color:#6b5f47;}
+  .equip-item-name{font-size:11px; margin-top:4px; color:var(--parchment); line-height:1.25;}
+  .equip-item-name.empty{color:#6b5f47; font-style:italic;}
+  .equip-item-stats{font-size:9px; color:#8a7d5f; margin-top:2px;}
+  .item-row{border:1px solid rgba(201,150,46,0.2); border-radius:6px; padding:10px 12px; margin-bottom:8px; cursor:pointer;}
+  .item-row.selected{border-color:var(--gold-bright); box-shadow:0 0 0 1px var(--gold-bright) inset;}
+  .item-row-name{font-size:13px; font-family:'Cinzel',serif;}
+  .item-row-count{color:#8a7d5f; font-family:'EB Garamond',serif; font-size:11px;}
+  .item-row-stats{font-size:11px; color:var(--gold-bright); margin-top:3px;}
+  .item-row-flavor{font-size:11px; color:#8a7d5f; font-style:italic; margin-top:3px;}
+
+  /* ---------- Idle view ---------- */
+  .idle-card{border:1px solid var(--parchment-edge); border-radius:8px; padding:22px 16px; text-align:center;
+    background:radial-gradient(ellipse at top, rgba(201,150,46,0.1), transparent 70%);}
+  .idle-card .accrued{font-size:32px; color:var(--gold-bright); font-family:'Cinzel',serif; margin:8px 0 2px;}
+  .idle-card .rate{font-size:12px; color:#8a7d5f;}
+  .idle-timer{font-size:11px; color:#6b5f47; margin-top:10px;}
+  .idle-bar-track{height:6px; border-radius:3px; background:rgba(201,150,46,0.12); margin-top:14px; overflow:hidden;}
+  .idle-bar-fill{height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-bright)); width:0%; transition:width 0.3s;}
+
+  /* ---------- Chests ---------- */
+  .tab-badge{position:absolute; top:6px; right:calc(50% - 20px); width:7px; height:7px; border-radius:50%;
+    background:var(--gold-bright); box-shadow:0 0 5px var(--gold-bright);}
+  nav.tabs button{position:relative;}
+  .chest-timer-card{border:1px solid var(--parchment-edge); border-radius:8px; padding:18px 16px; text-align:center;
+    background:radial-gradient(ellipse at top, rgba(201,150,46,0.08), transparent 70%);}
+  .chest-timer-value{font-size:20px; color:var(--gold-bright); font-family:'Cinzel',serif; margin:6px 0;}
+  .chest-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:6px;}
+  .chest-tile{aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; border-radius:8px; border:1px solid rgba(201,150,46,0.25); background:rgba(233,220,185,0.03);
+    transition:transform .12s;}
+  .chest-tile:active{transform:scale(0.94);}
+  .chest-icon{width:46px; height:36px; position:relative; margin-bottom:6px;}
+  .chest-icon .chest-body{position:absolute; bottom:0; left:0; width:100%; height:24px; border-radius:3px 3px 6px 6px;
+    background:linear-gradient(180deg, #8a6a35, #5a4420); border:1px solid var(--gold);}
+  .chest-icon .chest-lid{position:absolute; top:0; left:0; width:100%; height:16px; border-radius:6px 6px 3px 3px;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold)); border:1px solid var(--gold);
+    transform-origin:bottom center; transition:transform .4s ease;}
+  .chest-icon .chest-band{position:absolute; top:0; left:47%; width:6%; height:100%; background:rgba(21,16,9,0.5);}
+  .chest-tile.opened .chest-icon .chest-lid{transform:rotateX(-115deg) translateY(-2px);}
+  .chest-tile.opened{opacity:0.45; cursor:default;}
+  .chest-tile .chest-label{font-size:9.5px; text-transform:uppercase; letter-spacing:0.08em; color:#8a7d5f;}
+  .chest-empty-note{grid-column:1/-1; text-align:center; font-size:12px; color:#6b5f47; font-style:italic; padding:20px 8px;}
+
+  /* ---------- Fortune Wheel ---------- */
+  .wheel-wrap{position:relative; width:180px; height:180px; margin:10px auto 4px;}
+  .wheel-dial{width:100%; height:100%; border-radius:50%; border:3px solid var(--gold);
+    box-shadow:0 0 16px rgba(201,150,46,0.35), inset 0 0 12px rgba(0,0,0,0.4);}
+  .wheel-pointer{position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:20px;
+    color:var(--gold-bright); z-index:2; filter:drop-shadow(0 0 3px rgba(0,0,0,0.6));}
+  .wheel-status{display:flex; justify-content:space-between; font-size:11px; color:#8a7d5f; margin-top:8px; padding:0 4px;}
+  #spinBtn:disabled{opacity:0.4;}
+
+  .chest-reveal{position:fixed; inset:0; background:rgba(10,7,4,0.85); z-index:40; display:none;
+    align-items:center; justify-content:center; padding:20px;}
+  .chest-reveal.active{display:flex;}
+  .chest-reveal-card{background:var(--void-2); border:1px solid var(--gold); border-radius:14px; padding:28px 24px;
+    text-align:center; max-width:340px; width:100%;}
+  .chest-reveal-card .big-chest{width:90px; height:70px; margin:0 auto 18px; position:relative;}
+  .chest-reveal-card .big-chest .chest-body{position:absolute; bottom:0; left:0; width:100%; height:46px; border-radius:6px 6px 10px 10px;
+    background:linear-gradient(180deg, #8a6a35, #5a4420); border:2px solid var(--gold);}
+  .chest-reveal-card .big-chest .chest-lid{position:absolute; top:0; left:0; width:100%; height:30px; border-radius:10px 10px 6px 6px;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold)); border:2px solid var(--gold);
+    transform-origin:bottom center; animation:chestShake 0.5s ease 3;}
+  .chest-reveal-card .big-chest.burst .chest-lid{animation:chestPop 0.5s ease forwards;}
+  @keyframes chestShake{0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-4deg);} 75%{transform:rotate(4deg);}}
+  @keyframes chestPop{to{transform:rotateX(-130deg) translateY(-6px);}}
+  .chest-reveal-title{font-family:'Cinzel',serif; font-size:16px; color:var(--gold-bright); letter-spacing:0.06em;}
+  .chest-rewards{margin-top:16px; display:flex; flex-direction:column; gap:8px;}
+  .chest-reward-row{display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px;
+    opacity:0; animation:rewardIn .3s forwards;}
+  @keyframes rewardIn{to{opacity:1;}}
+  .chest-reward-row .r-icon{width:8px; height:8px; border-radius:50%; background:var(--gold-bright); flex-shrink:0;}
+
+  /* ---------- Battle view (real-time lane) ---------- */
+  .battle-arena{border:1px solid rgba(201,150,46,0.25); border-radius:8px; padding:12px; background:
+    radial-gradient(ellipse at 50% 0%, rgba(122,43,35,0.12), transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(201,150,46,0.10), transparent 55%),
+    var(--void-2); min-height:200px; position:relative;}
+  .battle-arena.shake{animation:screenShake .35s;}
+
+  .battle-topbar{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .base-hp{display:flex; align-items:center; gap:6px; flex:1;}
+  .base-hp.enemy-base{flex-direction:row-reverse;}
+  .base-icon{font-size:16px; flex-shrink:0;}
+  .base-bar-track{flex:1; height:8px; border-radius:4px; background:rgba(0,0,0,0.4); overflow:hidden; border:1px solid rgba(201,150,46,0.2);}
+  .base-bar-fill{height:100%; width:100%; background:linear-gradient(90deg, var(--gold), var(--gold-bright)); transition:width .3s;}
+  .base-hp.enemy-base .base-bar-fill{background:linear-gradient(90deg, #7a2b23, #a8453a);}
+  .battle-timer{font-family:'Cinzel',serif; font-size:13px; color:var(--gold-bright); flex-shrink:0; width:26px; text-align:center;}
+
+  .lane{position:relative; height:120px; border-top:1px solid rgba(201,150,46,0.15); border-bottom:1px solid rgba(201,150,46,0.15);
+    background:linear-gradient(0deg, rgba(0,0,0,0.15), transparent 30%); overflow:hidden;}
+  .lane-center-line{position:absolute; left:50%; top:0; bottom:0; width:1px;
+    background:linear-gradient(to bottom, transparent, rgba(201,150,46,0.3), transparent); z-index:0;}
+
+  .rt-unit{position:absolute; bottom:4px; width:34px; margin-left:-17px; text-align:center; z-index:1;
+    transition:left 0.1s linear;}
+  .rt-unit .u-portrait{width:100%; height:48px; position:relative;}
+  .rt-unit.enemy-side .u-portrait{transform:scaleX(-1);}
+  .fighter-svg{width:100%; height:100%; overflow:visible; display:block;
+    filter:drop-shadow(0 0 4px var(--aura-color, rgba(201,150,46,0.5)));}
+  .body-sway{animation:idleSway 2.8s ease-in-out infinite; transform-origin:30px 82px;}
+  .weapon-arm{transform-origin:49px 50px;}
+  .rt-unit .hp-track{height:3px; background:rgba(0,0,0,0.5); border-radius:2px; margin-top:1px; overflow:hidden;}
+  .rt-unit .hp-fill{height:100%; background:#5aa85a; transition:width .2s;}
+  .rt-unit .pip-track{display:flex; justify-content:center; gap:1.5px; margin-top:2px;}
+  .rt-unit .pip{width:3.5px; height:3.5px; border-radius:50%; background:rgba(201,150,46,0.2); border:1px solid rgba(201,150,46,0.3);}
+  .rt-unit .pip.lit{background:var(--gold-bright); box-shadow:0 0 3px var(--gold-bright);}
+  .rt-unit.dying{animation:unitDeath .5s ease forwards;}
+  .rt-unit.stunned .u-portrait{filter:grayscale(0.6);}
+  .rt-unit.attacking .u-portrait{animation:lungeForward .38s ease;}
+  .rt-unit.enemy-side.attacking .u-portrait{animation:lungeForwardEnemy .38s ease;}
+  .rt-unit.attacking .weapon-arm{animation:weaponSwing .38s ease;}
+  .rt-unit.hit .body-sway{animation:hitShake .3s;}
+  .rt-unit.ulting .fighter-svg{animation:ultFlash .5s ease;}
+  .rt-unit.ulting .u-portrait::after{content:''; position:absolute; inset:-12px; border-radius:50%;
+    border:2px solid var(--gold-bright); opacity:0; pointer-events:none; animation:powerRing .6s ease-out;}
+  .rt-unit.spawning{animation:spawnIn .38s ease;}
+  .float-text{position:absolute; top:-4px; left:50%; transform:translateX(-50%); font-size:11px; font-family:'Cinzel',serif;
+    font-weight:700; pointer-events:none; animation:floatUp .7s ease forwards; white-space:nowrap;}
+  @keyframes floatUp{0%{opacity:1; transform:translate(-50%,0);} 100%{opacity:0; transform:translate(-50%,-22px);}}
+  @keyframes unitDeath{to{opacity:0; transform:translateY(6px) scale(0.85);}}
+  @keyframes spawnIn{0%{transform:scale(0.3); opacity:0;} 70%{transform:scale(1.15); opacity:1;} 100%{transform:scale(1); opacity:1;}}
+  @keyframes idleSway{0%,100%{transform:rotate(0deg);} 50%{transform:rotate(2deg);}}
+  @keyframes weaponSwing{0%{transform:rotate(0deg);} 45%{transform:rotate(-55deg);} 100%{transform:rotate(0deg);}}
+  @keyframes lungeForward{0%{transform:translateX(0) scaleX(1);} 45%{transform:translateX(8px) scaleX(1);} 100%{transform:translateX(0) scaleX(1);}}
+  @keyframes lungeForwardEnemy{0%{transform:translateX(0) scaleX(-1);} 45%{transform:translateX(-8px) scaleX(-1);} 100%{transform:translateX(0) scaleX(-1);}}
+  @keyframes hitShake{0%,100%{transform:translateX(0) rotate(0);} 25%{transform:translateX(-3px) rotate(-8deg);} 75%{transform:translateX(3px) rotate(8deg);}}
+  @keyframes ultFlash{0%{filter:brightness(1) drop-shadow(0 0 4px var(--aura-color));} 50%{filter:brightness(2.2) drop-shadow(0 0 14px var(--gold-bright));} 100%{filter:brightness(1) drop-shadow(0 0 4px var(--aura-color));}}
+  @keyframes powerRing{0%{transform:scale(0.4); opacity:0.9;} 100%{transform:scale(2); opacity:0;}}
+  @keyframes screenShake{0%,100%{transform:translateX(0);} 20%{transform:translateX(-5px);} 40%{transform:translateX(5px);} 60%{transform:translateX(-3px);} 80%{transform:translateX(3px);}}
+
+  .energy-bar-row{display:flex; align-items:center; gap:8px; margin-top:12px;}
+  .energy-label{font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:#8a7d5f; flex-shrink:0;}
+  .energy-track{flex:1; height:8px; border-radius:4px; background:rgba(0,0,0,0.4); overflow:hidden; border:1px solid rgba(201,150,46,0.25);}
+  .energy-fill{height:100%; background:linear-gradient(90deg, #8fb8e0, #c9e0f0); transition:width .2s;}
+  .energy-value{font-size:11px; color:var(--gold-bright); font-family:'Cinzel',serif; flex-shrink:0;}
+
+  .card-row{display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px;}
+  .hero-card-deploy{flex-shrink:0; width:52px; border:1px solid var(--aura-color, rgba(201,150,46,0.3)); border-radius:8px;
+    padding:6px 4px 5px; text-align:center; cursor:pointer; background:rgba(233,220,185,0.03); transition:opacity .15s, transform .1s;
+    position:relative;}
+  .hero-card-deploy:active{transform:scale(0.93);}
+  .hero-card-deploy.unaffordable{opacity:0.35; cursor:default;}
+  .hero-card-deploy .power-badge{display:none;}
+  .hero-card-deploy.deployed-live{border-color:var(--gold-bright); background:rgba(201,150,46,0.1);
+    animation:cardReady 1.8s ease-in-out infinite;}
+  .hero-card-deploy.deployed-live .power-badge{display:flex; position:absolute; top:-6px; right:-6px; width:16px; height:16px;
+    border-radius:50%; background:var(--gold-bright); color:var(--ink); font-size:9px; align-items:center; justify-content:center;
+    box-shadow:0 0 5px var(--gold-bright);}
+  @keyframes cardReady{0%,100%{box-shadow:0 0 0 rgba(201,150,46,0);} 50%{box-shadow:0 0 8px rgba(201,150,46,0.5);}}
+  .deploy-portrait{width:100%; height:38px; display:flex; align-items:flex-end; justify-content:center;}
+  .deploy-portrait .fighter-svg{filter:drop-shadow(0 0 3px var(--aura-color, rgba(201,150,46,0.5)));}
+  .deploy-cost{font-size:10px; color:var(--gold-bright); font-family:'Cinzel',serif; margin-top:2px;}
+  .spell-card{border-color:rgba(143,184,224,0.5); background:rgba(143,184,224,0.05);}
+  .spell-card .spell-icon{font-size:26px; display:flex; align-items:center; justify-content:center; height:100%;
+    filter:drop-shadow(0 0 4px rgba(143,184,224,0.6));}
+  .spell-card .deploy-cost{color:#8fb8e0;}
+
+  .battle-result{text-align:center; margin-top:14px;}
+  .battle-result .verdict{font-family:'Cinzel',serif; font-size:20px; letter-spacing:0.08em;}
+  .battle-result .verdict.win{color:var(--gold-bright);}
+  .battle-result .verdict.lose{color:var(--blood);}
+
+
+  .empty-note{font-size:12px; color:#6b5f47; text-align:center; padding:20px 8px; font-style:italic;}
+  .toast{position:fixed; top:14px; left:50%; transform:translateX(-50%); background:var(--void-2); border:1px solid var(--gold);
+    color:var(--parchment); padding:9px 16px; border-radius:5px; font-size:12.5px; z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, top .25s;}
+  .toast.show{opacity:1; top:20px;}
+
+  /* ---------- Timed Action Command ---------- */
+  .ac-overlay{position:fixed; inset:0; background:rgba(10,7,4,0.82); z-index:60; display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:14px; cursor:pointer;}
+  .ac-overlay.active{display:flex;}
+  .ac-hint{font-family:'Cinzel',serif; font-size:13px; color:var(--gold-bright); letter-spacing:0.06em; text-align:center; padding:0 20px;}
+  .ac-target-wrap{position:relative; width:140px; height:140px; display:flex; align-items:center; justify-content:center;}
+  .ac-target-zone{position:absolute; width:56px; height:56px; border-radius:50%; border:3px solid var(--gold-bright);
+    box-shadow:0 0 10px rgba(232,184,75,0.6);}
+  .ac-ring{position:absolute; width:140px; height:140px; border-radius:50%; border:5px solid var(--parchment);
+    box-sizing:border-box;}
+  @keyframes acShrink{ from{ width:140px; height:140px; border-width:5px; opacity:1; } to{ width:56px; height:56px; border-width:2px; opacity:0.4; } }
+  .ac-label{font-family:'Cinzel',serif; font-size:22px; letter-spacing:0.08em; min-height:30px; opacity:0; transform:scale(0.7); transition:none;}
+  .ac-label.show{animation:acLabelPop .42s ease forwards;}
+  .ac-label.perfect{color:var(--gold-bright);}
+  .ac-label.good{color:#7fbf7f;}
+  .ac-label.miss{color:#a86a5a;}
+  @keyframes acLabelPop{0%{opacity:0; transform:scale(0.5);} 60%{opacity:1; transform:scale(1.25);} 100%{opacity:1; transform:scale(1);}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="title">Celestial War<small>gather your covenant, break their line</small></div>
+    <div class="resources">
+      <div class="res"><span class="icon gold-icon"></span><span id="goldDisplay">0</span></div>
+      <div class="res"><span class="icon relic-icon"></span><span id="relicDisplay">0</span></div>
+    </div>
+  </header>
+
+  <!-- FORMATION / BATTLE -->
+  <section class="view active" id="view-formation">
+    <div class="stage-banner">
+      <div class="chapter">Chapter I · The Long Road</div>
+      <div class="stage-num" id="stageNum">Stage 1</div>
+      <div class="stage-name" id="stageName">Wayfarer's Crossing</div>
+    </div>
+
+    <div class="section-title">Formation</div>
+    <div class="formation-wrap">
+      <div class="formation-grid">
+        <div class="formation-row back">
+          <div class="slot" data-slot="0"><span class="slot-label">Back</span></div>
+          <div class="slot" data-slot="1"><span class="slot-label">Back</span></div>
+        </div>
+        <div class="formation-row front">
+          <div class="slot" data-slot="2"><span class="slot-label">Front</span></div>
+          <div class="slot" data-slot="3"><span class="slot-label">Front</span></div>
+          <div class="slot" data-slot="4"><span class="slot-label">Front</span></div>
+        </div>
+      </div>
+      <div class="power-line">
+        <span>Formation Power</span>
+        <span class="val" id="formationPower">0</span>
+      </div>
+      <div class="synergy-line" id="synergyLine"></div>
+    </div>
+
+    <button class="primary" id="battleBtn">Deploy to Battle</button>
+
+    <div class="section-title" style="margin-top:26px;">Battlefield</div>
+    <div class="battle-arena" id="battleArena">
+      <div class="empty-note">Pick your 5-hero deck above, then deploy to battle. You'll play them live as energy allows — no more waiting for a log to replay.</div>
+    </div>
+  </section>
+
+  <!-- ROSTER -->
+  <section class="view" id="view-roster">
+    <div class="section-title">Your Roster</div>
+    <div class="roster-grid" id="rosterGrid"></div>
+    <div class="section-title">Undiscovered</div>
+    <div class="roster-grid" id="lockedGrid"></div>
+  </section>
+
+  <!-- IDLE -->
+  <section class="view" id="view-idle">
+    <div class="section-title">Idle Chronicle</div>
+    <div class="idle-card">
+      <div class="rate">Accrued while away</div>
+      <div class="accrued"><span id="idleAccrued">0</span> gold</div>
+      <div class="rate" id="idleRate">0 gold / min from your formation</div>
+      <button class="primary" id="claimBtn">Claim</button>
+      <div class="idle-bar-track"><div class="idle-bar-fill" id="idleBarFill"></div></div>
+      <div class="idle-timer" id="idleTimer">Capped at 8 hours of accrual</div>
+    </div>
+    <div class="section-title">How idle gold works</div>
+    <div class="lore-box" style="padding:0 4px;">
+      Every hero in your active formation contributes gold per minute based on its power.
+      Progress accrues even while the page is closed — reopen and claim what was earned, up to the cap.
+      Swap in stronger heroes or level up your roster to raise your rate.
+    </div>
+  </section>
+
+  <!-- CHESTS -->
+  <section class="view" id="view-chests">
+    <div class="section-title">Treasure</div>
+    <div class="chest-timer-card">
+      <div class="rate">Next free chest</div>
+      <div class="chest-timer-value" id="nextChestTimer">Ready now</div>
+      <div class="idle-bar-track"><div class="idle-bar-fill" id="chestTimerFill"></div></div>
+    </div>
+    <div class="section-title">Unopened</div>
+    <div class="chest-grid" id="chestGrid"></div>
+    <div class="section-title">Earn more chests</div>
+    <div class="lore-box" style="padding:0 4px;">
+      A free chest refills every 3 hours (up to 3 stored). Clearing every third stage
+      also awards a bonus chest. Chests hold a mix of gold, gear, and the occasional relic.
+    </div>
+
+    <div class="section-title" style="margin-top:26px;">Fortune Wheel</div>
+    <div class="wheel-wrap">
+      <div class="wheel-pointer">▼</div>
+      <div class="wheel-dial" id="wheelDial"></div>
+    </div>
+    <div class="wheel-status">
+      <span id="wheelSpinsLabel">1 spin available</span>
+      <span id="wheelTimer">Next free spin ready</span>
+    </div>
+    <button class="primary" id="spinBtn">Spin</button>
+    <div class="lore-box" style="padding:0 4px; margin-top:10px;">
+      A free spin refills every 6 hours (up to 2 stored). Most segments pay out gold,
+      relics, or gear — one segment is the jackpot.
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-view="formation"><span class="dot"></span>Formation</button>
+    <button class="tab-btn" data-view="roster"><span class="dot"></span>Roster</button>
+    <button class="tab-btn" data-view="chests"><span class="dot"></span>Chests<span class="tab-badge" id="chestBadge" style="display:none;"></span></button>
+    <button class="tab-btn" data-view="idle"><span class="dot"></span>Idle</button>
+  </nav>
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay">
+  <div class="sheet" id="sheetContent"></div>
+</div>
+
+<div class="chest-reveal" id="chestReveal">
+  <div class="chest-reveal-card" id="chestRevealCard"></div>
+</div>
+
+<div class="ac-overlay" id="actionCommandOverlay">
+  <div class="ac-hint">Tap when the ring closes!</div>
+  <div class="ac-target-wrap">
+    <div class="ac-target-zone"></div>
+    <div class="ac-ring" id="acRing"></div>
+  </div>
+  <div class="ac-label" id="acLabel"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   CHRONICLE ENGINE — theme-agnostic idle/formation battler template
+   -------------------------------------------------------------------------
+   HOW TO RESKIN:
+   1. Edit HERO_DATABASE below — swap name/role/rarity/lore/emoji per hero.
+      Nothing else in the engine needs to change for a new theme.
+   2. Edit STAGES for enemy waves / stage names.
+   3. Colors/fonts are CSS variables at the top of <style> — edit --gold,
+      --parchment, font-family imports, etc. to reskin the whole visual style.
+   ========================================================================= */
+
+// ---------- 1. HERO DATABASE (placeholder — swap freely) ----------
+// Each hero has a base kit (stats) and an `ultimate`: a data-driven special
+// move that charges over `cooldown` turns and fires automatically in battle.
+// See EFFECT DISPATCH (section 11a) for what each `type` does mechanically.
+const RARITY_ORDER = ["common","uncommon","rare","epic","legendary"];
+const RARITY_MULT  = { common:1, uncommon:1.25, rare:1.6, epic:2.1, legendary:2.8 };
+const ROLE_ICONS = { Guardian:"🛡", Ranger:"🏹", Support:"✚", Mystic:"✨", Striker:"⚔", Controller:"⛓", Summoner:"📖", Paladin:"☀", Necromancer:"💀" };
+const WEAPON_BY_ROLE = { Guardian:"sword", Ranger:"bow", Support:"staff", Mystic:"wand", Striker:"saber", Controller:"whip", Summoner:"tome", Paladin:"sword", Necromancer:"wand" };
+const ENEMY_WEAPONS = ["axe","claw"];
+const ENEMY_BODY_COLORS = ["#6b2a22","#4a2a4a","#2a4a2a","#5a3a1a"];
+
+// ---------- 1c. FIGHTER SPRITES ----------
+// Original construction-paper-style figures — flat fills, thick outlines,
+// simple shapes. Not a copy of any show's character designs, just the same
+// general cutout aesthetic. `crop` returns a head/torso "bust" (used in
+// small UI contexts); full figures (legs + weapon swing) are used in battle.
+function fighterSVG(cfg, crop){
+  const { bodyColor, skinColor="#e0b98a", weapon, spiky=false, outline="#1a1410" } = cfg;
+  const WEAPON_MARKUP = {
+    sword: `<g class="weapon-arm">
+      <rect x="47" y="14" width="4" height="30" rx="1" fill="#cfd6dc" stroke="${outline}" stroke-width="1.6"/>
+      <rect x="45" y="40" width="8" height="3" fill="#c9962e" stroke="${outline}" stroke-width="1.2"/>
+      <rect x="46" y="42" width="6" height="9" rx="2" fill="#8a6a35" stroke="${outline}" stroke-width="1.4"/>
+    </g>`,
+    bow: `<g class="weapon-arm">
+      <path d="M49,18 Q40,34 49,50" stroke="#6b4a26" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <line x1="49" y1="18" x2="49" y2="50" stroke="#e8dcb9" stroke-width="1"/>
+    </g>`,
+    staff: `<g class="weapon-arm">
+      <line x1="49" y1="50" x2="49" y2="14" stroke="#6b4a26" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="49" cy="11" r="5.5" fill="#7fbf7f" stroke="${outline}" stroke-width="1.6"/>
+    </g>`,
+    wand: `<g class="weapon-arm">
+      <line x1="49" y1="50" x2="49" y2="22" stroke="#6b4a26" stroke-width="2.6" stroke-linecap="round"/>
+      <polygon points="49,10 54,18 49,26 44,18" fill="#8fb8e0" stroke="${outline}" stroke-width="1.4"/>
+    </g>`,
+    saber: `<g class="weapon-arm">
+      <path d="M46,50 Q62,34 50,12" stroke="#cfd6dc" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <rect x="45" y="45" width="7" height="8" rx="2" fill="#8a6a35" stroke="${outline}" stroke-width="1.4"/>
+    </g>`,
+    axe: `<g class="weapon-arm">
+      <line x1="49" y1="52" x2="49" y2="16" stroke="#4a3826" stroke-width="3" stroke-linecap="round"/>
+      <path d="M49,14 L60,20 L58,30 L49,26 Z" fill="#8a2b23" stroke="${outline}" stroke-width="1.6"/>
+    </g>`,
+    claw: `<g class="weapon-arm">
+      <path d="M46,42 L40,28 M49,40 L46,24 M52,42 L52,26" stroke="${outline}" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    </g>`,
+    whip: `<g class="weapon-arm">
+      <path d="M49,50 Q60,40 50,26 Q42,16 54,6" stroke="#4a3826" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    </g>`,
+    tome: `<g class="weapon-arm">
+      <rect x="43" y="34" width="13" height="17" rx="1.5" fill="#6b4a26" stroke="${outline}" stroke-width="1.6" transform="rotate(-18 49 42)"/>
+      <line x1="49.5" y1="35" x2="49.5" y2="50" stroke="${outline}" stroke-width="1" transform="rotate(-18 49 42)"/>
+      <circle cx="49.5" cy="42" r="2" fill="#8fb8e0" transform="rotate(-18 49 42)"/>
+    </g>`,
+  };
+  const spikes = spiky ? `
+    <polygon points="22,6 25,1 28,6" fill="${bodyColor}" stroke="${outline}" stroke-width="1.6"/>
+    <polygon points="29,5 32,0 35,5" fill="${bodyColor}" stroke="${outline}" stroke-width="1.6"/>
+    <polygon points="36,6 39,1 42,6" fill="${bodyColor}" stroke="${outline}" stroke-width="1.6"/>` : "";
+  const mouth = spiky
+    ? `<path d="M22,20 L25,23 L28,20 L31,23 L34,20 L37,23 L40,20" stroke="${outline}" stroke-width="1.6" fill="none"/>`
+    : `<path d="M22,20 Q30,25 38,20" stroke="${outline}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  const viewBox = crop ? "0 0 60 56" : "0 0 60 90";
+
+  return `<svg viewBox="${viewBox}" class="fighter-svg" preserveAspectRatio="xMidYMin meet">
+    ${spikes}
+    <g class="body-sway">
+      <rect x="19" y="54" width="9" height="24" rx="3" fill="#2f2418" stroke="${outline}" stroke-width="2"/>
+      <rect x="32" y="54" width="9" height="24" rx="3" fill="#2f2418" stroke="${outline}" stroke-width="2"/>
+      <ellipse cx="23.5" cy="80" rx="6" ry="3.5" fill="${outline}"/>
+      <ellipse cx="36.5" cy="80" rx="6" ry="3.5" fill="${outline}"/>
+      <rect x="6" y="28" width="9" height="20" rx="4" fill="${bodyColor}" stroke="${outline}" stroke-width="2"/>
+      <circle cx="10.5" cy="50" r="5" fill="${skinColor}" stroke="${outline}" stroke-width="1.8"/>
+      <rect x="16" y="26" width="28" height="28" rx="8" fill="${bodyColor}" stroke="${outline}" stroke-width="2.2"/>
+      <rect x="16" y="46" width="28" height="5" fill="#3a2a16" stroke="${outline}" stroke-width="1.4"/>
+      <circle cx="30" cy="15" r="11" fill="${skinColor}" stroke="${outline}" stroke-width="2.2"/>
+      <circle cx="24" cy="14" r="1.8" fill="${outline}"/>
+      <circle cx="36" cy="14" r="1.8" fill="${outline}"/>
+      ${mouth}
+      <rect x="45" y="28" width="9" height="20" rx="4" fill="${bodyColor}" stroke="${outline}" stroke-width="2"/>
+      <circle cx="49.5" cy="50" r="5" fill="${skinColor}" stroke="${outline}" stroke-width="1.8"/>
+      ${WEAPON_MARKUP[weapon]||""}
+    </g>
+  </svg>`;
+}
+function heroFighterSVG(hero, crop){
+  return fighterSVG({ bodyColor:`var(--c-${hero.rarity})`, weapon:WEAPON_BY_ROLE[hero.role]||"sword" }, crop);
+}
+function enemyFighterSVG(enemyUnit, crop){
+  return fighterSVG({ bodyColor:enemyUnit.bodyColor, skinColor:"#8a7a6a", weapon:enemyUnit.weapon, spiky:true }, crop);
+}
+
+const HERO_DATABASE = [
+  // -------- COMMON --------
+  { id:"h01", name:"Ashwake Sentinel",  role:"Guardian", rarity:"common", faction:"Wayfarer Order", emoji:"🛡",
+    base:{hp:120,atk:14,def:18,spd:8},
+    ultimate:{ name:"Bulwark Stance", cooldown:4, type:"shield_lowest_ally", value:2.4, duration:2,
+      desc:"Shields the lowest-HP ally, absorbing damage for 2 turns." },
+    lore:"A watchman of the old crossings, said to have never once left a post unguarded." },
+  { id:"h02", name:"Reedmarsh Archer",  role:"Ranger", rarity:"common", faction:"Wayfarer Order", emoji:"🏹",
+    base:{hp:80, atk:20,def:8, spd:14},
+    ultimate:{ name:"Twin Loose", cooldown:3, type:"double_strike", value:0.75,
+      desc:"Fires twice at the weakest enemy, each hit at 75% attack power." },
+    lore:"Trained among the marsh villages, where a wasted arrow meant a hungry winter." },
+  { id:"h11", name:"Copperline Duelist",role:"Striker", rarity:"common", faction:"Ironroot Clan", emoji:"⚔",
+    base:{hp:90, atk:19,def:10,spd:13},
+    ultimate:{ name:"Riposte Cut", cooldown:3, type:"execute_bonus", value:1.3,
+      desc:"A precise strike that deals extra damage to a badly wounded target." },
+    lore:"Settles every dispute on the practice yard, win or lose, with a bow." },
+  { id:"h12", name:"Thistledown Medic", role:"Support", rarity:"common", faction:"Verdant Circle", emoji:"✚",
+    base:{hp:96, atk:10,def:12,spd:12},
+    ultimate:{ name:"Field Dressing", cooldown:3, type:"heal_lowest_ally", value:1.6,
+      desc:"Mends the lowest-HP ally for a burst of healing." },
+    lore:"Carries more bandages than rations, and has never once run short." },
+
+  // -------- UNCOMMON --------
+  { id:"h03", name:"Cinderhearth Cook", role:"Support", rarity:"uncommon", faction:"Cinderkin", emoji:"🔥",
+    base:{hp:95, atk:11,def:12,spd:11},
+    ultimate:{ name:"Hearth Blessing", cooldown:4, type:"heal_lowest_ally", value:2.2,
+      desc:"A hearty meal restores a large chunk of an ally's health." },
+    lore:"Kept the caravans fed through three famines; her kettle never truly went cold." },
+  { id:"h04", name:"Hollow Vale Scout", role:"Ranger", rarity:"uncommon", faction:"Duskbound", emoji:"🗺",
+    base:{hp:88, atk:19,def:9, spd:16},
+    ultimate:{ name:"Marked Prey", cooldown:4, type:"burn_target", value:0.55, duration:3,
+      desc:"Marks the target, dealing damage over 3 turns." },
+    lore:"Maps the unmapped valleys, trading rumors for safe passage." },
+  { id:"h13", name:"Emberfall Skirmisher",role:"Striker", rarity:"uncommon", faction:"Cinderkin", emoji:"🔪",
+    base:{hp:98, atk:21,def:11,spd:15},
+    ultimate:{ name:"Flurry", cooldown:4, type:"double_strike", value:0.9,
+      desc:"Two rapid cuts, each hitting hard." },
+    lore:"Learned to fight in the cinder-pits, where a slow blade meant a burn." },
+  { id:"h14", name:"Palewood Seer",     role:"Mystic", rarity:"uncommon", faction:"Verdant Circle", emoji:"🔮",
+    base:{hp:90, atk:20,def:10,spd:13},
+    ultimate:{ name:"Foresight Strike", cooldown:4, type:"aoe_damage", value:0.45,
+      desc:"A vision of the battle lets her strike every enemy at once." },
+    lore:"Speaks in half-finished sentences — the endings, she says, haven't happened yet." },
+
+  // -------- RARE --------
+  { id:"h05", name:"Graniteborn Shield",role:"Guardian", rarity:"rare", faction:"Ironroot Clan", emoji:"🪨",
+    base:{hp:150,atk:15,def:26,spd:7},
+    ultimate:{ name:"Unyielding Wall", cooldown:5, type:"shield_lowest_ally", value:3.2, duration:3,
+      desc:"A massive shield that holds for 3 turns." },
+    lore:"Carved from the same quarry as the old gate towers, and just as stubborn." },
+  { id:"h06", name:"Windward Cantor",   role:"Support", rarity:"rare", faction:"Wayfarer Order", emoji:"🎵",
+    base:{hp:92, atk:13,def:11,spd:15},
+    ultimate:{ name:"Rallying Verse", cooldown:5, type:"buff_team_atk", value:1.22, duration:3,
+      desc:"A rousing hymn boosts the whole formation's attack for 3 turns." },
+    lore:"Her hymns carried across three valleys before the roads were paved." },
+  { id:"h15", name:"Longshore Breaker", role:"Striker", rarity:"rare", faction:"Tidebound", emoji:"🌊",
+    base:{hp:132,atk:24,def:15,spd:11},
+    ultimate:{ name:"Undertow", cooldown:4, type:"stun_random_enemy", duration:1, value:1,
+      desc:"Sweeps a random enemy off balance, stunning them for a turn." },
+    lore:"Fought the tide long enough to learn its rhythm, and its temper." },
+  { id:"h16", name:"Verdant Warden",    role:"Mystic", rarity:"rare", faction:"Verdant Circle", emoji:"🌿",
+    base:{hp:118,atk:22,def:14,spd:12},
+    ultimate:{ name:"Bramble Curse", cooldown:5, type:"burn_target", value:0.8, duration:3,
+      desc:"Binds the target in thorns, dealing heavy damage over time." },
+    lore:"Guards the last untouched grove, and the grove guards her back." },
+
+  // -------- EPIC --------
+  { id:"h07", name:"Duskfen Warden",    role:"Guardian", rarity:"epic", faction:"Duskbound", emoji:"🌑",
+    base:{hp:175,atk:18,def:24,spd:10},
+    ultimate:{ name:"Nightbind Ward", cooldown:4, type:"shield_lowest_ally", value:3.6, duration:2,
+      desc:"Wreathes an ally in shadow-forged armor." },
+    lore:"Chose exile at the fen's edge, and turned it into a fortress." },
+  { id:"h08", name:"Starfall Oracle",   role:"Mystic", rarity:"epic", faction:"Duskbound", emoji:"✨",
+    base:{hp:100,atk:24,def:13,spd:13},
+    ultimate:{ name:"Falling Star", cooldown:4, type:"execute_bonus", value:1.9,
+      desc:"Calls down a devastating blow, stronger against wounded foes." },
+    lore:"Reads the fallen embers of old signal-fires like scripture." },
+  { id:"h17", name:"Ferrowake Vanguard",role:"Striker", rarity:"epic", faction:"Cinderkin", emoji:"⚡",
+    base:{hp:140,atk:27,def:16,spd:16},
+    ultimate:{ name:"Storm Onslaught", cooldown:4, type:"aoe_damage", value:0.65,
+      desc:"A whirlwind of strikes crashes into every enemy." },
+    lore:"Outran a lightning storm once, or so the story goes — twice, more likely." },
+
+  // -------- LEGENDARY --------
+  { id:"h09", name:"Ironroot Chieftain",role:"Guardian", rarity:"legendary", faction:"Ironroot Clan", emoji:"👑",
+    base:{hp:210,atk:22,def:30,spd:9},
+    ultimate:{ name:"Unbroken Line", cooldown:5, type:"revive_ally", value:0.35,
+      desc:"Rallies a fallen ally back into the fight at partial health." },
+    lore:"United seven scattered clans under one banner, without raising a blade." },
+  { id:"h10", name:"Tidebinder Sage",   role:"Mystic", rarity:"legendary", faction:"Tidebound", emoji:"🌊",
+    base:{hp:130,atk:28,def:16,spd:14},
+    ultimate:{ name:"Rising Tide", cooldown:5, type:"aoe_damage", value:0.85,
+      desc:"Unleashes a wave that crashes over every enemy at once." },
+    lore:"Bargained with the river itself to spare a drowning village." },
+
+  // -------- NEW CLASSES: Controller, Summoner, Paladin, Necromancer --------
+  { id:"h18", name:"Thornwhip Enforcer", role:"Controller", rarity:"rare", faction:"Tidebound", emoji:"⛓",
+    base:{hp:112,atk:18,def:13,spd:13},
+    ultimate:{ name:"Binding Snare", cooldown:4, type:"slow_all_enemies", value:0.45, duration:3,
+      desc:"Snares every enemy, slowing their advance for a few seconds." },
+    lore:"Trained hounds and worse with the same length of rope." },
+  { id:"h19", name:"Ashbound Conjurer", role:"Summoner", rarity:"uncommon", faction:"Cinderkin", emoji:"📖",
+    base:{hp:90, atk:17,def:10,spd:12},
+    ultimate:{ name:"Bound Wisp", cooldown:5, type:"summon_minion", value:0.35,
+      desc:"Calls a spectral wisp to fight at her side." },
+    lore:"Reads from a book with no visible end to its pages." },
+  { id:"h20", name:"Sunward Paladin", role:"Paladin", rarity:"epic", faction:"Wayfarer Order", emoji:"☀",
+    base:{hp:165,atk:20,def:22,spd:11},
+    ultimate:{ name:"Radiant Vow", cooldown:4, type:"shield_lowest_ally", value:3.4, duration:3,
+      desc:"Swears an oath of protection, shielding the ally who needs it most." },
+    lore:"Took a vow at the crossing shrine and has never once broken it." },
+  { id:"h21", name:"Hollow Choir Wraith", role:"Necromancer", rarity:"epic", faction:"Duskbound", emoji:"💀",
+    base:{hp:105,atk:25,def:12,spd:13},
+    ultimate:{ name:"Withering Curse", cooldown:4, type:"burn_target", value:0.9, duration:3,
+      desc:"Curses the target, wasting them away over time." },
+    lore:"Hums a hymn nobody living remembers the words to." },
+];
+
+const ENEMY_NAMES = ["Rustling Wraith","Bramble Stalker","Ashfen Marauder","Gravepath Hound","Sable Cultist","Hollow Effigy","Stormcrow Reaver","Molted Husk"];
+const ENEMY_ULTIMATE = { name:"Feral Onslaught", cooldown:4, type:"aoe_damage", value:0.4, desc:"Every enemy lashes out at once." };
+
+// ---------- 1a. FACTION SYNERGIES ----------
+// 2 heroes sharing a faction in the active formation grants a small attack
+// bonus to those heroes; 3+ grants a bigger one. Swap FACTION_SYNERGY or the
+// faction tags above to redesign entirely.
+const FACTION_SYNERGY = { 2: 1.10, 3: 1.22 };
+
+// ---------- 1b. EQUIPMENT DATABASE ----------
+// Simplified template: items are types, not unique instances — owning one
+// lets you equip that type on any hero. A fuller game would track individual
+// item instances so gear can't be "equipped" on two heroes for free; this
+// keeps the template lean while still demonstrating the full equip flow.
+const ITEM_DATABASE = [
+  { id:"i01", name:"Rusted Blade",     slot:"weapon", rarity:"common", stats:{atk:6},  flavor:"Notched from a hundred small fights, none of them lost." },
+  { id:"i02", name:"Forged Saber",     slot:"weapon", rarity:"rare",   stats:{atk:14}, flavor:"Balanced by a smith who never once picked up a blade herself." },
+  { id:"i03", name:"Sunsteel Edge",    slot:"weapon", rarity:"epic",   stats:{atk:22}, flavor:"Said to hold the last light of the forge that made it." },
+  { id:"i04", name:"Worn Leathers",    slot:"armor",  rarity:"common", stats:{hp:20,def:4},  flavor:"Patched more times than the wearer can remember." },
+  { id:"i05", name:"Chainweave Vest",  slot:"armor",  rarity:"rare",   stats:{hp:45,def:10}, flavor:"Each link set by hand, in a workshop that no longer stands." },
+  { id:"i06", name:"Bastion Plate",    slot:"armor",  rarity:"epic",   stats:{hp:80,def:18}, flavor:"Forged for a wall that was never breached." },
+  { id:"i07", name:"Traveler's Charm", slot:"trinket",rarity:"common", stats:{spd:2,atk:3},  flavor:"Worn smooth by a thumb that never stopped worrying it." },
+  { id:"i08", name:"Wardstone Band",   slot:"trinket",rarity:"rare",   stats:{spd:4,atk:7},  flavor:"Cool to the touch, even in the height of summer." },
+  { id:"i09", name:"Halo Sigil",       slot:"trinket",rarity:"epic",   stats:{spd:6,atk:12}, flavor:"Hums faintly when danger is close." },
+];
+const EQUIP_SLOTS = ["weapon","armor","trinket"];
+
+// ---------- 2. STAGE DATA ----------
+const STAGES = [
+  { name:"Wayfarer's Crossing", enemyCount:2, enemyPowerMult:0.75 },
+  { name:"The Salt Flats",      enemyCount:3, enemyPowerMult:0.85 },
+  { name:"Cracked Aqueduct",    enemyCount:3, enemyPowerMult:0.95 },
+  { name:"Ember Watch",         enemyCount:4, enemyPowerMult:1.05 },
+  { name:"The Sunken Archive",  enemyCount:4, enemyPowerMult:1.2  },
+];
+
+// ---------- 3. STATE ----------
+let state = {
+  gold: 200,
+  relics: 0,
+  ownedHeroIds: ["h01","h02","h03","h05"], // starter roster
+  heroLevels: { h01:1, h02:1, h03:1, h05:1 },
+  formation: [null,null,null,null,null], // 5 slots: [back0, back1, front0, front1, front2]
+  stageIndex: 0,
+  lastActiveTs: Date.now(),
+  inventory: { i01:1, i04:1, i07:1 }, // itemId -> unequipped count owned
+  equipped: {}, // heroId -> { weapon: itemId|null, armor: itemId|null, trinket: itemId|null }
+  chests: 1,
+  lastChestGrantTs: Date.now(),
+  lastChestStageBonus: -1, // last stageIndex a milestone chest was awarded for
+  wheelSpins: 1,
+  lastWheelGrantTs: Date.now(),
+};
+
+const CHEST_INTERVAL_MS = 3*3600*1000; // free chest every 3 hours
+const CHEST_CAP = 3;
+const WHEEL_INTERVAL_MS = 6*3600*1000; // free spin every 6 hours
+const WHEEL_CAP = 2;
+const WHEEL_SEGMENTS = [
+  { label:"20 Gold", color:"#5a4420", type:"gold", value:20 },
+  { label:"Common Gear", color:"var(--c-common)", type:"item_rarity", rarity:"common" },
+  { label:"45 Gold", color:"#7a5a1a", type:"gold", value:45 },
+  { label:"Rare Gear", color:"var(--c-rare)", type:"item_rarity", rarity:"rare" },
+  { label:"2 Relics", color:"#6b4f9e", type:"relics", value:2 },
+  { label:"70 Gold", color:"#c9962e", type:"gold", value:70 },
+  { label:"Epic Gear", color:"var(--c-epic)", type:"item_rarity", rarity:"epic" },
+  { label:"JACKPOT", color:"var(--c-legendary)", type:"jackpot" },
+];
+
+const STORAGE_KEY = "chronicle-save";
+const IDLE_CAP_SECONDS = 8*3600;
+const IDLE_GOLD_PER_POWER_PER_MIN = 0.05;
+
+// ---------- 4. PERSISTENCE ----------
+// Works two ways from one file: inside Claude's artifact preview it uses the
+// sandboxed window.storage bridge; once deployed as a standalone PWA (no
+// bridge present) it falls back to localStorage automatically. This keeps a
+// single source of truth instead of maintaining two divergent copies.
+async function saveState(){
+  try{
+    state.lastActiveTs = Date.now();
+    const payload = JSON.stringify(state);
+    if(window.storage && window.storage.set){
+      await window.storage.set("save", payload);
+    } else {
+      localStorage.setItem(STORAGE_KEY, payload);
+    }
+  }catch(e){ console.error("save failed", e); }
+}
+async function loadState(){
+  try{
+    if(window.storage && window.storage.get){
+      const res = await window.storage.get("save");
+      if(res && res.value) state = Object.assign(state, JSON.parse(res.value));
+      return;
+    }
+  }catch(e){ /* fall through to localStorage */ }
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = Object.assign(state, JSON.parse(raw));
+  }catch(e){
+    console.log("no existing save, starting fresh");
+  }
+}
+
+// ---------- 5. HERO HELPERS ----------
+function getHero(id){ return HERO_DATABASE.find(h=>h.id===id); }
+function heroLevel(id){ return state.heroLevels[id] || 1; }
+function getItem(id){ return ITEM_DATABASE.find(i=>i.id===id); }
+function heroEquipped(id){ return state.equipped[id] || {weapon:null, armor:null, trinket:null}; }
+
+function computedStats(id){
+  const h = getHero(id);
+  const lvl = heroLevel(id);
+  const rMult = RARITY_MULT[h.rarity];
+  const lvlMult = 1 + (lvl-1)*0.12;
+  const stats = {
+    hp:  Math.round(h.base.hp  * rMult * lvlMult),
+    atk: Math.round(h.base.atk * rMult * lvlMult),
+    def: Math.round(h.base.def * rMult * lvlMult),
+    spd: Math.round(h.base.spd * (1 + (rMult-1)*0.3)), // speed scales gently with rarity, not level
+  };
+  // apply equipped gear on top of base stats
+  const eq = heroEquipped(id);
+  EQUIP_SLOTS.forEach(slot=>{
+    const itemId = eq[slot];
+    if(!itemId) return;
+    const item = getItem(itemId);
+    if(!item) return;
+    Object.keys(item.stats).forEach(stat=>{ stats[stat] = (stats[stat]||0) + item.stats[stat]; });
+  });
+  return stats;
+}
+
+// Counts how many heroes in the CURRENT formation share each faction, used
+// both to display synergy badges and to apply the attack bonus in battle.
+function activeFactionBonuses(){
+  const counts = {};
+  state.formation.forEach(id=>{
+    if(!id) return;
+    const f = getHero(id).faction;
+    if(!f) return;
+    counts[f] = (counts[f]||0)+1;
+  });
+  const active = {};
+  Object.keys(counts).forEach(f=>{
+    const n = counts[f];
+    if(n>=3) active[f] = { count:n, mult:FACTION_SYNERGY[3] };
+    else if(n>=2) active[f] = { count:n, mult:FACTION_SYNERGY[2] };
+  });
+  return active;
+}
+function heroPower(id){
+  const s = computedStats(id);
+  return Math.round(s.hp*0.4 + s.atk*3 + s.def*2.2 + s.spd*1.5);
+}
+function levelUpCost(id){
+  const lvl = heroLevel(id);
+  const h = getHero(id);
+  return Math.round(30 * lvl * RARITY_MULT[h.rarity]);
+}
+
+// ---------- 6. RENDER: HEADER ----------
+function renderHeader(){
+  document.getElementById("goldDisplay").textContent = Math.floor(state.gold).toLocaleString();
+  document.getElementById("relicDisplay").textContent = state.relics;
+}
+
+// ---------- 7. RENDER: FORMATION ----------
+function formationPower(){
+  return state.formation.reduce((sum,id)=> sum + (id ? heroPower(id) : 0), 0);
+}
+function renderFormation(){
+  document.querySelectorAll(".slot").forEach(slot=>{
+    const idx = +slot.dataset.slot;
+    const heroId = state.formation[idx];
+    const label = slot.querySelector(".slot-label");
+    slot.innerHTML = "";
+    if(label) slot.appendChild(label);
+    if(heroId){
+      const h = getHero(heroId);
+      slot.classList.add("filled");
+      slot.style.borderColor = `var(--c-${h.rarity})`;
+      slot.style.setProperty("--aura-color", `var(--c-${h.rarity})`);
+      const icon = document.createElement("div");
+      icon.className = "hero-icon";
+      icon.innerHTML = heroFighterSVG(h, true);
+      slot.appendChild(icon);
+      const lv = document.createElement("div");
+      lv.className = "lv-badge";
+      lv.textContent = "Lv" + heroLevel(heroId);
+      slot.appendChild(lv);
+    } else {
+      slot.classList.remove("filled");
+      slot.style.borderColor = "";
+    }
+  });
+  document.getElementById("formationPower").textContent = formationPower().toLocaleString();
+  document.getElementById("stageNum").textContent = "Stage " + (state.stageIndex+1);
+  document.getElementById("stageName").textContent = STAGES[Math.min(state.stageIndex, STAGES.length-1)].name;
+  const engaged = state.formation.some(x=>x);
+  document.getElementById("battleBtn").disabled = !engaged;
+
+  // synergy badges
+  const synergyEl = document.getElementById("synergyLine");
+  const active = activeFactionBonuses();
+  const keys = Object.keys(active);
+  if(keys.length){
+    synergyEl.innerHTML = keys.map(f=>{
+      const bonus = Math.round((active[f].mult-1)*100);
+      return `<span class="synergy-badge">${f} · ${active[f].count} · +${bonus}% ATK</span>`;
+    }).join("");
+    synergyEl.style.display = "flex";
+  } else {
+    synergyEl.innerHTML = "";
+    synergyEl.style.display = "none";
+  }
+}
+
+// ---------- 8. RENDER: ROSTER ----------
+function renderRoster(){
+  const ownedGrid = document.getElementById("rosterGrid");
+  const lockedGrid = document.getElementById("lockedGrid");
+  ownedGrid.innerHTML = "";
+  lockedGrid.innerHTML = "";
+  HERO_DATABASE.forEach(h=>{
+    const owned = state.ownedHeroIds.includes(h.id);
+    const card = document.createElement("div");
+    card.className = "hero-card" + (owned?"":" locked");
+    card.innerHTML = `
+      <div class="portrait" style="--aura-color:var(--c-${h.rarity});">${owned?heroFighterSVG(h,true):'<span class="locked-mark">?</span>'}</div>
+      <div class="name">${owned?h.name:"???"}</div>
+      <div class="rarity-label" style="color:var(--c-${h.rarity});">${h.rarity}</div>
+      ${owned?`<div class="lv">${ROLE_ICONS[h.role]} ${h.faction} · Lv ${heroLevel(h.id)} · Pwr ${heroPower(h.id)}</div>`:""}
+    `;
+    if(owned){
+      card.addEventListener("click", ()=> openHeroSheet(h.id));
+      ownedGrid.appendChild(card);
+    } else {
+      lockedGrid.appendChild(card);
+    }
+  });
+}
+
+// ---------- 9. HERO DETAIL SHEET ----------
+function openHeroSheet(id){
+  const h = getHero(id);
+  const s = computedStats(id);
+  const cost = levelUpCost(id);
+  const inFormation = state.formation.includes(id);
+  const eq = heroEquipped(id);
+  const sheet = document.getElementById("sheetContent");
+  sheet.innerHTML = `
+    <button class="close-sheet" id="closeSheet">&times;</button>
+    <div class="sheet-header">
+      <div class="portrait-lg" style="--aura-color:var(--c-${h.rarity});">${heroFighterSVG(h,false)}</div>
+      <div class="info">
+        <div class="name">${h.name}</div>
+        <div class="meta">${h.role} · ${h.faction} · <span style="color:var(--c-${h.rarity})">${h.rarity}</span> · Lv ${heroLevel(id)}</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-row"><span>Health</span><span class="v">${s.hp}</span></div>
+      <div class="stat-row"><span>Attack</span><span class="v">${s.atk}</span></div>
+      <div class="stat-row"><span>Defense</span><span class="v">${s.def}</span></div>
+      <div class="stat-row"><span>Speed</span><span class="v">${s.spd}</span></div>
+    </div>
+    <div class="ability-box"><strong style="color:var(--gold-bright);">${h.ultimate.name}</strong> · charges in ${h.ultimate.cooldown} turns<br>${h.ultimate.desc}</div>
+
+    <div class="section-title" style="margin-top:18px;">Equipment</div>
+    <div class="equip-grid" id="equipGrid"></div>
+
+    <div class="lore-box">${h.lore}</div>
+    <button class="primary" id="levelUpBtn">Level Up — ${cost} gold</button>
+    <button class="secondary" id="formationBtn">${inFormation ? "Remove from Formation" : "Add to Formation"}</button>
+  `;
+  const equipGrid = document.getElementById("equipGrid");
+  EQUIP_SLOTS.forEach(slot=>{
+    const itemId = eq[slot];
+    const item = itemId ? getItem(itemId) : null;
+    const cell = document.createElement("div");
+    cell.className = "equip-slot" + (item ? " filled" : "");
+    cell.innerHTML = item
+      ? `<div class="equip-slot-label">${slot}</div><div class="equip-item-name" style="color:var(--c-${item.rarity});">${item.name}</div><div class="equip-item-stats">${Object.entries(item.stats).map(([k,v])=>`+${v} ${k}`).join(" · ")}</div>`
+      : `<div class="equip-slot-label">${slot}</div><div class="equip-item-name empty">Empty</div>`;
+    cell.addEventListener("click", ()=> openItemPicker(id, slot));
+    equipGrid.appendChild(cell);
+  });
+
+  document.getElementById("sheetOverlay").classList.add("active");
+  document.getElementById("closeSheet").onclick = closeSheet;
+  document.getElementById("levelUpBtn").onclick = ()=>{
+    if(state.gold >= cost){
+      state.gold -= cost;
+      state.heroLevels[id] = (state.heroLevels[id]||1)+1;
+      saveState();
+      renderAll();
+      openHeroSheet(id); // refresh sheet with new stats/cost
+      showToast(`${h.name} advanced to Lv ${state.heroLevels[id]}`);
+    } else {
+      showToast("Not enough gold");
+    }
+  };
+  document.getElementById("formationBtn").onclick = ()=>{
+    if(inFormation){
+      const idx = state.formation.indexOf(id);
+      state.formation[idx] = null;
+    } else {
+      const emptyIdx = state.formation.indexOf(null);
+      if(emptyIdx === -1){ showToast("Formation is full"); return; }
+      state.formation[emptyIdx] = id;
+    }
+    saveState();
+    renderAll();
+    closeSheet();
+  };
+}
+function closeSheet(){ document.getElementById("sheetOverlay").classList.remove("active"); }
+
+// ---------- 9a. ITEM PICKER (equip/unequip from a hero's sheet) ----------
+function openItemPicker(heroId, slot){
+  const eq = heroEquipped(heroId);
+  const currentItemId = eq[slot];
+  const owned = ITEM_DATABASE.filter(i=> i.slot===slot && (state.inventory[i.id]||0) > 0);
+  const sheet = document.getElementById("sheetContent");
+  sheet.innerHTML = `
+    <button class="close-sheet" id="closeSheet">&times;</button>
+    <div class="section-title" style="margin-top:0;">Choose ${slot}</div>
+    <div id="itemPickerList"></div>
+    ${currentItemId ? '<button class="secondary" id="unequipBtn">Unequip</button>' : ""}
+  `;
+  const list = document.getElementById("itemPickerList");
+  if(owned.length === 0 && !currentItemId){
+    list.innerHTML = `<div class="empty-note">No ${slot} items owned yet. Win battles to find gear.</div>`;
+  }
+  owned.forEach(item=>{
+    const count = state.inventory[item.id];
+    const row = document.createElement("div");
+    row.className = "item-row" + (currentItemId===item.id ? " selected" : "");
+    row.innerHTML = `
+      <div class="item-row-name" style="color:var(--c-${item.rarity});">${item.name} <span class="item-row-count">×${count}</span></div>
+      <div class="item-row-stats">${Object.entries(item.stats).map(([k,v])=>`+${v} ${k}`).join(" · ")}</div>
+      <div class="item-row-flavor">${item.flavor}</div>
+    `;
+    row.addEventListener("click", ()=>{
+      if(!state.equipped[heroId]) state.equipped[heroId] = {weapon:null, armor:null, trinket:null};
+      // return previously equipped item (if any) to inventory
+      const prev = state.equipped[heroId][slot];
+      if(prev){ state.inventory[prev] = (state.inventory[prev]||0)+1; }
+      state.equipped[heroId][slot] = item.id;
+      state.inventory[item.id] = (state.inventory[item.id]||1)-1;
+      saveState(); renderAll();
+      openHeroSheet(heroId);
+    });
+    list.appendChild(row);
+  });
+  document.getElementById("sheetOverlay").classList.add("active");
+  document.getElementById("closeSheet").onclick = closeSheet;
+  const unequipBtn = document.getElementById("unequipBtn");
+  if(unequipBtn) unequipBtn.onclick = ()=>{
+    state.inventory[currentItemId] = (state.inventory[currentItemId]||0)+1;
+    state.equipped[heroId][slot] = null;
+    saveState(); renderAll();
+    openHeroSheet(heroId);
+  };
+}
+
+// ---------- 10. SLOT TAP → open a picker (reuses roster selection) ----------
+function openSlotPicker(slotIdx){
+  const owned = state.ownedHeroIds;
+  if(owned.length === 0){ showToast("No heroes recruited yet"); return; }
+  const sheet = document.getElementById("sheetContent");
+  const currentId = state.formation[slotIdx];
+  sheet.innerHTML = `
+    <button class="close-sheet" id="closeSheet">&times;</button>
+    <div class="section-title" style="margin-top:0;">Assign to Slot</div>
+    <div class="roster-grid" id="pickerGrid"></div>
+    ${currentId ? '<button class="secondary" id="clearSlotBtn">Clear Slot</button>' : ""}
+  `;
+  const grid = document.getElementById("pickerGrid");
+  owned.forEach(id=>{
+    const h = getHero(id);
+    const usedElsewhere = state.formation.includes(id) && state.formation[slotIdx] !== id;
+    const card = document.createElement("div");
+    card.className = "hero-card" + (usedElsewhere ? " locked" : "") + (state.formation[slotIdx]===id ? " selected":"");
+    card.innerHTML = `
+      <div class="portrait" style="--aura-color:var(--c-${h.rarity});">${heroFighterSVG(h,true)}</div>
+      <div class="name">${h.name}</div>
+      <div class="rarity-label" style="color:var(--c-${h.rarity});">${h.rarity}</div>
+      <div class="lv">Lv ${heroLevel(id)} · Pwr ${heroPower(id)}</div>
+    `;
+    if(!usedElsewhere){
+      card.addEventListener("click", ()=>{
+        state.formation[slotIdx] = id;
+        saveState(); renderAll(); closeSheet();
+      });
+    }
+    grid.appendChild(card);
+  });
+  document.getElementById("sheetOverlay").classList.add("active");
+  document.getElementById("closeSheet").onclick = closeSheet;
+  const clearBtn = document.getElementById("clearSlotBtn");
+  if(clearBtn) clearBtn.onclick = ()=>{
+    state.formation[slotIdx] = null;
+    saveState(); renderAll(); closeSheet();
+  };
+}
+
+// ---------- 11. REAL-TIME LANE BATTLE ----------
+// Replaces the old "resolve then replay a log" system. Deployed units walk,
+// meet, and fight live on a tick loop; energy regenerates over time and
+// gates how often you can play a hero card. This is the whole engine —
+// swap ENERGY_MAX/RARITY_COST/etc. to retune pacing, or add a new ultimate
+// `type` to EFFECT DISPATCH (11a) to add new move behavior.
+const ENERGY_MAX = 10;
+const ENERGY_REGEN_PER_SEC = 0.75;
+const RARITY_COST = { common:2, uncommon:3, rare:4, epic:5, legendary:6 };
+
+// ---------- 11a-1. SPELL CARDS ----------
+// Instant, no-deploy effects cast at any current lane state. Add a new entry
+// here and it shows up in the card row automatically — no other wiring needed
+// unless you invent a new `type` (handle it in castSpell's switch below).
+const SPELL_DATABASE = [
+  { id:"s01", name:"Skyfire Surge", cost:5, type:"aoe_damage_enemies", value:0.5, icon:"🔥",
+    desc:"Rains fire on every enemy currently on the field." },
+  { id:"s02", name:"Mercy's Breath", cost:4, type:"heal_all_allies", value:22, icon:"✚",
+    desc:"Restores health to every deployed hero." },
+  { id:"s03", name:"Wardlight", cost:4, type:"shield_all_allies", value:20, icon:"🛡",
+    desc:"Shields every deployed hero against incoming damage." },
+  { id:"s04", name:"Stormcall", cost:6, type:"stun_all_enemies", duration:1.6, icon:"⚡",
+    desc:"Freezes every enemy on the field, briefly halting their advance." },
+];
+const ATTACK_INTERVAL = 1.1;       // seconds between a unit's attacks
+const ENGAGE_RANGE = 6;            // % lane distance at which units start fighting
+const BASE_MAX_HP = 260 ;
+const ENEMY_SPAWN_INTERVAL = 3.2;  // seconds between enemy deployments
+const BATTLE_TIME_LIMIT = 70;      // seconds before sudden-death HP comparison
+const TICK_MS = 100;
+
+let battleSession = null;
+
+function statsForHero(id){
+  const h = getHero(id);
+  return { ...computedStats(id), name:h.name, emoji:h.emoji, rarity:h.rarity, role:h.role, faction:h.faction, ultimate:h.ultimate, heroId:id };
+}
+
+function makeEnemyStatBlock(stageIndexAtStart){
+  const basePower = 60 + stageIndexAtStart*22;
+  const stage = STAGES[Math.min(stageIndexAtStart, STAGES.length-1)];
+  const p = basePower * stage.enemyPowerMult * (0.85 + Math.random()*0.3);
+  return {
+    name: ENEMY_NAMES[Math.floor(Math.random()*ENEMY_NAMES.length)],
+    hp: Math.round(p*2.0), maxHp: Math.round(p*2.0),
+    atk: Math.round(p*0.32), def: Math.round(p*0.2), spd: 6+Math.round(Math.random()*8),
+    weapon: ENEMY_WEAPONS[Math.floor(Math.random()*ENEMY_WEAPONS.length)],
+    bodyColor: ENEMY_BODY_COLORS[Math.floor(Math.random()*ENEMY_BODY_COLORS.length)],
+    ultimate: ENEMY_ULTIMATE,
+  };
+}
+
+// ---------- 11a. EFFECT DISPATCH ----------
+// Every ultimate resolves through here. `allies`/`enemies` are live arrays of
+// currently-deployed units (dead ones filtered by callers as needed).
+function lowestHpUnit(list){
+  const alive = list.filter(u=>u.hp>0);
+  if(!alive.length) return null;
+  return alive.reduce((low,u)=> (u.hp/u.maxHp) < (low.hp/low.maxHp) ? u : low, alive[0]);
+}
+function dealDamage(caster, target, mult, tag){
+  const buffMult = (caster.synergyMult||1) * (caster.atkBuff && caster.atkBuff.timer>0 ? caster.atkBuff.mult : 1);
+  const raw = Math.max(3, caster.atk*buffMult*mult - target.def*0.5);
+  let dmg = Math.round(raw * (0.9+Math.random()*0.2));
+  if(target.shield>0){
+    const absorbed = Math.min(target.shield, dmg);
+    target.shield -= absorbed;
+    dmg -= absorbed;
+  }
+  target.hp = Math.max(0, target.hp-dmg);
+  flashUnit(target.uid, "hit");
+  spawnFloatText(target.uid, `-${dmg}`, tag==="ultimate-hit" ? "var(--gold-bright)" : "#e0b0a0");
+  if(target.hp<=0) killUnit(target);
+}
+// `timingMult` scales potency: 1 = neutral (used for auto-triggered
+// ultimates during normal combat). Manually-tapped power moves pass a value
+// from the timed action-command minigame (see triggerPowerMove) — a
+// well-timed tap makes the move genuinely stronger, a bad one weaker.
+function applyUltimate(caster, timingMult){
+  timingMult = timingMult || 1;
+  const bs = battleSession;
+  const allies = bs.units.filter(u=> u.isEnemy===caster.isEnemy && u.hp>0);
+  const enemies = bs.units.filter(u=> u.isEnemy!==caster.isEnemy && u.hp>0);
+  const u = caster.ultimate;
+  flashUnit(caster.uid, "ulting", 600);
+  spawnFloatText(caster.uid, u.name, "var(--gold-bright)");
+
+  switch(u.type){
+    case "shield_lowest_ally": {
+      const t = lowestHpUnit(allies) || caster;
+      t.shield += Math.round(caster.def * u.value * timingMult);
+      spawnFloatText(t.uid, "+shield", "#8fb8e0");
+      break;
+    }
+    case "heal_lowest_ally": {
+      const t = lowestHpUnit(allies) || caster;
+      const heal = Math.round(caster.atk * u.value * timingMult);
+      t.hp = Math.min(t.maxHp, t.hp+heal);
+      spawnFloatText(t.uid, `+${heal}`, "#7fbf7f");
+      break;
+    }
+    case "buff_team_atk": {
+      const scaledMult = 1 + (u.value-1)*timingMult;
+      allies.forEach(a=> a.atkBuff = { mult:scaledMult, timer:u.duration*ATTACK_INTERVAL });
+      break;
+    }
+    case "burn_target": {
+      const t = lowestHpUnit(enemies);
+      if(t){ t.burn = { dmg: Math.round(caster.atk*u.value*0.5*timingMult), timer:u.duration*1.2, tick:1.2, interval:1.2 }; }
+      break;
+    }
+    case "stun_random_enemy": {
+      if(enemies.length){
+        const t = enemies[Math.floor(Math.random()*enemies.length)];
+        t.stunTimer = (t.stunTimer||0) + u.duration*1.2*timingMult;
+      }
+      break;
+    }
+    case "slow_all_enemies": {
+      enemies.forEach(t=>{ t.slow = { mult:u.value, timer:u.duration*1.2*timingMult }; });
+      break;
+    }
+    case "summon_minion": {
+      const minion = {
+        uid: nextUid(), isEnemy:caster.isEnemy, x: caster.x + (caster.isEnemy?-3:3), dir:caster.dir,
+        speed: (caster.speed||3.5), hp: Math.round(caster.maxHp*u.value*timingMult), maxHp: Math.round(caster.maxHp*u.value*timingMult),
+        atk: Math.round(caster.atk*0.55), def: Math.round(caster.def*0.5), spd: caster.spd||10,
+        rarity: caster.rarity||"common", role:"Minion",
+        shield:0, stunTimer:0, burn:null, atkBuff:null,
+        state:"walk", target:null, attackTimer:ATTACK_INTERVAL*0.5,
+        reviveEligible:false, isMinion:true,
+      };
+      bs.units.push(minion);
+      renderNewUnit(minion);
+      break;
+    }
+    case "aoe_damage": {
+      enemies.forEach(t=> dealDamage(caster, t, u.value*timingMult, "ultimate-hit"));
+      break;
+    }
+    case "double_strike": {
+      const t = lowestHpUnit(enemies);
+      if(t) dealDamage(caster, t, u.value*timingMult, "ultimate-hit");
+      const t2 = lowestHpUnit(enemies);
+      if(t2) dealDamage(caster, t2, u.value*timingMult, "ultimate-hit");
+      break;
+    }
+    case "execute_bonus": {
+      const t = lowestHpUnit(enemies);
+      if(t){
+        const bonus = (t.hp/t.maxHp) < 0.4 ? u.value*1.5 : u.value;
+        dealDamage(caster, t, bonus*timingMult, "ultimate-hit");
+      }
+      break;
+    }
+    case "revive_ally": {
+      const fallen = bs.units.filter(x=> x.isEnemy===caster.isEnemy && x.hp<=0 && x.reviveEligible);
+      if(fallen.length){
+        const t = fallen[0];
+        t.hp = Math.min(t.maxHp, Math.round(t.maxHp*u.value*timingMult));
+        t.reviveEligible = false;
+        reviveUnitVisual(t);
+      } else {
+        const healAmt = Math.round(caster.atk*1.2*timingMult);
+        const t = lowestHpUnit(allies) || caster;
+        t.hp = Math.min(t.maxHp, t.hp + healAmt);
+        spawnFloatText(t.uid, `+${healAmt}`, "#7fbf7f");
+      }
+      break;
+    }
+  }
+}
+
+// ---------- 11b. UNIT LIFECYCLE ----------
+let uidCounter = 0;
+function nextUid(){ return "u" + (uidCounter++); }
+
+function deployHero(heroId){
+  const bs = battleSession;
+  if(!bs || !bs.active) return;
+  const h = getHero(heroId);
+  const cost = RARITY_COST[h.rarity];
+  if(bs.energy < cost) { showToast("Not enough energy"); return; }
+  bs.energy -= cost;
+  const s = statsForHero(heroId);
+  const synergyMult = h.faction && bs.synergies[h.faction] ? bs.synergies[h.faction].mult : 1;
+  const unit = {
+    uid: nextUid(), heroId, isEnemy:false, x:4, dir:1,
+    speed: 3.2 + s.spd*0.22,
+    hp:s.hp, maxHp:s.hp, atk:s.atk, def:s.def, spd:s.spd,
+    emoji:s.emoji, rarity:s.rarity, role:s.role, faction:s.faction, synergyMult,
+    ultimate:s.ultimate, ultCounter:0,
+    shield:0, stunTimer:0, burn:null, atkBuff:null,
+    state:"walk", target:null, attackTimer:ATTACK_INTERVAL*0.4,
+    reviveEligible:true,
+  };
+  bs.units.push(unit);
+  renderNewUnit(unit);
+}
+
+// Tapping a card whose hero is already alive on the field opens a timed
+// action-command prompt (tap when the ring hits the target zone) instead of
+// spawning a duplicate. Timing quality scales the move's actual potency —
+// see applyUltimate's `timingMult` param and resolveActionCommand below.
+function triggerPowerMove(unit){
+  const bs = battleSession;
+  if(!bs || !bs.active) return;
+  if(!unit.ultimate){ showToast("No power move ready"); return; }
+  const cost = RARITY_COST[unit.rarity] || 3;
+  if(bs.energy < cost){ showToast("Not enough energy"); return; }
+  bs.energy -= cost;
+  unit.ultCounter = 0;
+  startActionCommand(unit);
+}
+
+// ---------- 11c. TIMED ACTION COMMAND ----------
+// Pauses the tick loop, shows a shrinking ring, and grades how close the
+// player's tap lands to the target window. Auto-resolves as a Miss if the
+// player doesn't tap in time, so it never softlocks a battle.
+const AC_DURATION = 1000;
+const AC_PERFECT = [520, 680];
+const AC_GOOD = [380, 820];
+
+function startActionCommand(unit){
+  const bs = battleSession;
+  if(bs.tickHandle){ clearInterval(bs.tickHandle); bs.tickHandle = null; }
+
+  const overlay = document.getElementById("actionCommandOverlay");
+  const ring = document.getElementById("acRing");
+  const label = document.getElementById("acLabel");
+  label.textContent = "";
+  label.className = "ac-label";
+  overlay.classList.add("active");
+  ring.style.animation = "none";
+  void ring.offsetWidth; // restart animation
+  ring.style.animation = `acShrink ${AC_DURATION}ms linear forwards`;
+
+  const startTime = Date.now();
+  let resolved = false;
+  let autoResolveTimer;
+
+  function resolve(){
+    if(resolved) return;
+    resolved = true;
+    overlay.removeEventListener("click", resolve);
+    clearTimeout(autoResolveTimer);
+    const elapsed = Date.now() - startTime;
+    let tier, mult;
+    if(elapsed>=AC_PERFECT[0] && elapsed<=AC_PERFECT[1]){ tier="PERFECT!"; mult=1.5; }
+    else if(elapsed>=AC_GOOD[0] && elapsed<=AC_GOOD[1]){ tier="Good"; mult=1.15; }
+    else { tier="Miss"; mult=0.7; }
+
+    label.textContent = tier;
+    label.className = "ac-label show " + (tier==="PERFECT!" ? "perfect" : tier==="Good" ? "good" : "miss");
+
+    setTimeout(()=>{
+      overlay.classList.remove("active");
+      if(battleSession && battleSession.active){
+        applyUltimate(unit, mult);
+        const arena = document.getElementById("battleArena");
+        if(arena){ arena.classList.add("shake"); setTimeout(()=> arena.classList.remove("shake"), 350); }
+        if(bs.active && !bs.tickHandle){ bs.tickHandle = setInterval(battleTick, TICK_MS); }
+      }
+    }, 420);
+  }
+
+  overlay.addEventListener("click", resolve);
+  autoResolveTimer = setTimeout(resolve, AC_DURATION + 150);
+}
+
+function castSpell(spellId){
+  const bs = battleSession;
+  if(!bs || !bs.active) return;
+  const spell = SPELL_DATABASE.find(s=>s.id===spellId);
+  if(!spell) return;
+  if(bs.energy < spell.cost){ showToast("Not enough energy"); return; }
+  bs.energy -= spell.cost;
+
+  const allies = bs.units.filter(u=> !u.isEnemy && u.hp>0);
+  const enemies = bs.units.filter(u=> u.isEnemy && u.hp>0);
+  const casterProxy = { atk: (allies[0]&&allies[0].atk) || 30, def:0, synergyMult:1 };
+
+  switch(spell.type){
+    case "aoe_damage_enemies":
+      enemies.forEach(t=> dealDamage(casterProxy, t, spell.value, "spell"));
+      break;
+    case "heal_all_allies":
+      allies.forEach(a=>{ a.hp = Math.min(a.maxHp, a.hp+spell.value); spawnFloatText(a.uid, `+${spell.value}`, "#7fbf7f"); });
+      break;
+    case "shield_all_allies":
+      allies.forEach(a=>{ a.shield += spell.value; spawnFloatText(a.uid, "+shield", "#8fb8e0"); });
+      break;
+    case "stun_all_enemies":
+      enemies.forEach(t=>{ t.stunTimer = (t.stunTimer||0) + spell.duration; });
+      break;
+  }
+  showToast(`${spell.icon} ${spell.name}`);
+}
+
+function spawnEnemyUnit(cfg){
+  const bs = battleSession;
+  const unit = {
+    uid: nextUid(), isEnemy:true, x:96, dir:-1,
+    speed: 2.6 + cfg.spd*0.2,
+    hp:cfg.hp, maxHp:cfg.maxHp, atk:cfg.atk, def:cfg.def, spd:cfg.spd,
+    emoji:"👹", weapon:cfg.weapon, bodyColor:cfg.bodyColor, name:cfg.name,
+    ultimate:cfg.ultimate, ultCounter:Math.floor(Math.random()*2),
+    shield:0, stunTimer:0, burn:null, atkBuff:null,
+    state:"walk", target:null, attackTimer:ATTACK_INTERVAL*0.6,
+    reviveEligible:false,
+  };
+  bs.units.push(unit);
+  renderNewUnit(unit);
+}
+
+function killUnit(u){
+  u.state = "dead";
+  u.hp = 0;
+  const el = document.querySelector(`[data-uid="${u.uid}"]`);
+  if(el){
+    el.classList.add("dying");
+    setTimeout(()=> el.remove(), 500);
+  }
+}
+
+// ---------- 11c. TICK LOOP ----------
+function findTarget(u){
+  const bs = battleSession;
+  const opposing = bs.units.filter(o=> o.isEnemy!==u.isEnemy && o.hp>0);
+  if(!opposing.length) return null;
+  return opposing.reduce((closest,o)=>{
+    const d = Math.abs(o.x-u.x);
+    const cd = Math.abs(closest.x-u.x);
+    return d<cd ? o : closest;
+  }, opposing[0]);
+}
+
+function battleTick(){
+  const bs = battleSession;
+  if(!bs || !bs.active) return;
+  const dt = TICK_MS/1000;
+
+  bs.elapsed += dt;
+  bs.energy = Math.min(ENERGY_MAX, bs.energy + ENERGY_REGEN_PER_SEC*dt);
+
+  bs.enemySpawnTimer -= dt;
+  if(bs.enemySpawnTimer<=0 && bs.enemyQueue.length){
+    spawnEnemyUnit(bs.enemyQueue.shift());
+    bs.enemySpawnTimer = ENEMY_SPAWN_INTERVAL;
+  }
+
+  bs.units.forEach(u=>{
+    if(u.hp<=0) return;
+
+    if(u.stunTimer>0){ u.stunTimer -= dt; renderUnitFrame(u); return; }
+
+    if(u.burn){
+      u.burn.tick -= dt; u.burn.timer -= dt;
+      if(u.burn.tick<=0){
+        u.hp = Math.max(0, u.hp-u.burn.dmg);
+        spawnFloatText(u.uid, `-${u.burn.dmg}`, "#c98a5a");
+        u.burn.tick = u.burn.interval;
+        if(u.hp<=0){ killUnit(u); return; }
+      }
+      if(u.burn.timer<=0) u.burn=null;
+    }
+    if(u.atkBuff){ u.atkBuff.timer -= dt; if(u.atkBuff.timer<=0) u.atkBuff=null; }
+    if(u.slow){ u.slow.timer -= dt; if(u.slow.timer<=0) u.slow=null; }
+    const effSpeed = u.speed * (u.slow ? u.slow.mult : 1);
+
+    if(u.target==="BASE"){
+      u.state = "fight";
+      u.attackTimer -= dt;
+      if(u.attackTimer<=0){
+        const dmg = Math.max(4, Math.round(u.atk*0.8));
+        if(u.isEnemy) bs.playerBaseHp = Math.max(0, bs.playerBaseHp-dmg);
+        else bs.enemyBaseHp = Math.max(0, bs.enemyBaseHp-dmg);
+        flashUnit(u.uid, "attacking");
+        u.attackTimer = ATTACK_INTERVAL;
+      }
+    } else {
+      let t = u.target ? battleSession.units.find(x=>x.uid===u.target && x.hp>0) : null;
+      if(!t){ t = findTarget(u); u.target = t ? t.uid : null; }
+      if(t){
+        const dist = Math.abs(t.x-u.x);
+        if(dist <= ENGAGE_RANGE){
+          u.state = "fight";
+          u.attackTimer -= dt;
+          if(u.attackTimer<=0){
+            flashUnit(u.uid, "attacking");
+            u.ultCounter = (u.ultCounter||0)+1;
+            if(u.ultimate && u.ultCounter >= u.ultimate.cooldown){
+              u.ultCounter = 0;
+              applyUltimate(u);
+            } else {
+              dealDamage(u, t, 1, "attack");
+            }
+            u.attackTimer = ATTACK_INTERVAL;
+          }
+        } else {
+          u.state = "walk";
+          u.x = Math.max(0, Math.min(100, u.x + u.dir*effSpeed*dt));
+        }
+      } else {
+        u.state = "walk";
+        u.x = Math.max(0, Math.min(100, u.x + u.dir*effSpeed*dt));
+        if((!u.isEnemy && u.x>=94) || (u.isEnemy && u.x<=6)) u.target = "BASE";
+      }
+    }
+    renderUnitFrame(u);
+  });
+
+  renderBattleHud();
+  checkBattleEnd();
+}
+
+// ---------- 11d. RENDERING ----------
+function renderNewUnit(u){
+  const lane = document.getElementById("lane");
+  if(!lane) return;
+  const el = document.createElement("div");
+  el.className = "rt-unit spawning" + (u.isEnemy ? " enemy-side" : "");
+  el.dataset.uid = u.uid;
+  el.style.left = u.x + "%";
+  const figure = u.isEnemy ? enemyFighterSVG(u, false) : fighterSVG({bodyColor:`var(--c-${u.rarity})`, weapon:WEAPON_BY_ROLE[u.role]||"sword"}, false);
+  const pipCount = u.ultimate ? u.ultimate.cooldown : 0;
+  let pips = "";
+  for(let p=0;p<pipCount;p++) pips += `<span class="pip" data-pip="${p}"></span>`;
+  el.innerHTML = `
+    <div class="u-portrait" style="--aura-color:${u.isEnemy ? 'rgba(122,43,35,0.7)' : `var(--c-${u.rarity})`};">${figure}</div>
+    <div class="hp-track"><div class="hp-fill" style="width:100%"></div></div>
+    <div class="pip-track">${pips}</div>
+  `;
+  lane.appendChild(el);
+  setTimeout(()=> el.classList.remove("spawning"), 380);
+}
+function renderUnitFrame(u){
+  const el = document.querySelector(`[data-uid="${u.uid}"]`);
+  if(!el) return;
+  el.style.left = u.x + "%";
+  const fill = el.querySelector(".hp-fill");
+  if(fill) fill.style.width = Math.max(0,(u.hp/u.maxHp)*100) + "%";
+  if(u.ultimate){
+    const pips = el.querySelectorAll(".pip");
+    pips.forEach((p,idx)=> p.classList.toggle("lit", idx < (u.ultCounter||0)));
+  }
+  el.classList.toggle("stunned", u.stunTimer>0);
+}
+function flashUnit(uid, cls, duration){
+  const el = document.querySelector(`[data-uid="${uid}"]`);
+  if(!el) return;
+  el.classList.add(cls);
+  setTimeout(()=> el.classList.remove(cls), duration||380);
+}
+function reviveUnitVisual(u){
+  const el = document.querySelector(`[data-uid="${u.uid}"]`);
+  if(el) el.classList.remove("dying");
+  renderUnitFrame(u);
+}
+function spawnFloatText(uid, text, color){
+  const el = document.querySelector(`[data-uid="${uid}"]`);
+  if(!el) return;
+  const f = document.createElement("div");
+  f.className = "float-text";
+  f.style.color = color;
+  f.textContent = text;
+  el.appendChild(f);
+  setTimeout(()=> f.remove(), 700);
+}
+function renderBattleHud(){
+  const bs = battleSession;
+  const pf = document.getElementById("playerBaseFill");
+  const ef = document.getElementById("enemyBaseFill");
+  if(pf) pf.style.width = Math.max(0,(bs.playerBaseHp/BASE_MAX_HP)*100)+"%";
+  if(ef) ef.style.width = Math.max(0,(bs.enemyBaseHp/BASE_MAX_HP)*100)+"%";
+  const efill = document.getElementById("energyFill");
+  const eval_ = document.getElementById("energyValue");
+  if(efill) efill.style.width = (bs.energy/ENERGY_MAX*100)+"%";
+  if(eval_) eval_.textContent = Math.floor(bs.energy)+"/"+ENERGY_MAX;
+  const timerEl = document.getElementById("battleTimer");
+  if(timerEl) timerEl.textContent = Math.max(0, Math.ceil(BATTLE_TIME_LIMIT-bs.elapsed));
+  // card afford-state + deployed-live state (deployed hero cards become power-move buttons)
+  document.querySelectorAll(".hero-card-deploy").forEach(card=>{
+    const cost = +card.dataset.cost;
+    card.classList.toggle("unaffordable", bs.energy < cost);
+    const heroId = card.dataset.heroId;
+    if(heroId){
+      const liveUnit = bs.units.find(u=> u.heroId===heroId && !u.isEnemy && u.hp>0);
+      card.classList.toggle("deployed-live", !!liveUnit);
+    }
+  });
+}
+
+// ---------- 11e. BATTLE START / END ----------
+function startBattle(){
+  const deck = state.formation.filter(x=>x);
+  if(!deck.length){ showToast("Add heroes to your formation first"); return; }
+  const stage = STAGES[Math.min(state.stageIndex, STAGES.length-1)];
+  const synergies = activeFactionBonuses();
+  const enemyQueue = [];
+  for(let i=0;i<stage.enemyCount;i++) enemyQueue.push(makeEnemyStatBlock(state.stageIndex));
+
+  battleSession = {
+    active:true, elapsed:0, energy:4,
+    playerBaseHp:BASE_MAX_HP, enemyBaseHp:BASE_MAX_HP,
+    units:[], enemyQueue, enemySpawnTimer:0.8, synergies,
+    stageIndexAtStart: state.stageIndex,
+  };
+
+  const arena = document.getElementById("battleArena");
+  arena.innerHTML = `
+    <div class="battle-topbar">
+      <div class="base-hp player-base"><div class="base-icon">🏰</div><div class="base-bar-track"><div class="base-bar-fill" id="playerBaseFill"></div></div></div>
+      <div class="battle-timer" id="battleTimer">${BATTLE_TIME_LIMIT}</div>
+      <div class="base-hp enemy-base"><div class="base-bar-track"><div class="base-bar-fill" id="enemyBaseFill"></div></div><div class="base-icon">🏰</div></div>
+    </div>
+    <div class="lane" id="lane"><div class="lane-center-line"></div></div>
+    <div class="energy-bar-row">
+      <span class="energy-label">Energy</span>
+      <div class="energy-track"><div class="energy-fill" id="energyFill"></div></div>
+      <span class="energy-value" id="energyValue">4/10</span>
+    </div>
+    <div class="card-row" id="cardRow"></div>
+    <div class="battle-result" id="battleResult"></div>
+  `;
+  const cardRow = document.getElementById("cardRow");
+  deck.forEach(heroId=>{
+    const h = getHero(heroId);
+    const cost = RARITY_COST[h.rarity];
+    const card = document.createElement("div");
+    card.className = "hero-card-deploy";
+    card.dataset.cost = cost;
+    card.dataset.heroId = heroId;
+    card.style.setProperty("--aura-color", `var(--c-${h.rarity})`);
+    card.innerHTML = `
+      <div class="deploy-portrait">${fighterSVG({bodyColor:`var(--c-${h.rarity})`, weapon:WEAPON_BY_ROLE[h.role]||"sword"}, true)}</div>
+      <div class="power-badge">⚡</div>
+      <div class="deploy-cost">${cost}</div>
+    `;
+    card.addEventListener("click", ()=>{
+      const liveUnit = battleSession && battleSession.units.find(u=> u.heroId===heroId && !u.isEnemy && u.hp>0);
+      if(liveUnit) triggerPowerMove(liveUnit);
+      else deployHero(heroId);
+    });
+    cardRow.appendChild(card);
+  });
+  SPELL_DATABASE.forEach(spell=>{
+    const card = document.createElement("div");
+    card.className = "hero-card-deploy spell-card";
+    card.dataset.cost = spell.cost;
+    card.innerHTML = `
+      <div class="deploy-portrait spell-icon">${spell.icon}</div>
+      <div class="deploy-cost">${spell.cost}</div>
+    `;
+    card.title = spell.desc;
+    card.addEventListener("click", ()=> castSpell(spell.id));
+    cardRow.appendChild(card);
+  });
+
+  if(battleSession.tickHandle) clearInterval(battleSession.tickHandle);
+  battleSession.tickHandle = setInterval(battleTick, TICK_MS);
+}
+
+function checkBattleEnd(){
+  const bs = battleSession;
+  if(!bs || !bs.active) return;
+  let outcome = null;
+  if(bs.enemyBaseHp<=0) outcome = "win";
+  else if(bs.playerBaseHp<=0) outcome = "lose";
+  else if(bs.elapsed >= BATTLE_TIME_LIMIT){
+    outcome = bs.playerBaseHp >= bs.enemyBaseHp ? "win" : "lose";
+  }
+  if(outcome) endBattle(outcome);
+}
+
+function endBattle(outcome){
+  const bs = battleSession;
+  bs.active = false;
+  clearInterval(bs.tickHandle);
+  document.querySelectorAll(".hero-card-deploy").forEach(c=> c.classList.add("unaffordable"));
+
+  const resultEl = document.getElementById("battleResult");
+  if(outcome === "win"){
+    const goldReward = 25 + state.stageIndex*8;
+    state.gold += goldReward;
+    if(state.stageIndex < STAGES.length-1) state.stageIndex++;
+    resultEl.innerHTML = `<div class="verdict win">Victory</div><div style="font-size:12px;color:#a3987a;margin-top:4px;">+${goldReward} gold · advancing to stage ${state.stageIndex+1}</div>`;
+    if(Math.random()<0.35){
+      const undiscovered = HERO_DATABASE.filter(h=>!state.ownedHeroIds.includes(h.id));
+      if(undiscovered.length){
+        const recruit = undiscovered[Math.floor(Math.random()*undiscovered.length)];
+        state.ownedHeroIds.push(recruit.id);
+        state.heroLevels[recruit.id] = 1;
+        resultEl.innerHTML += `<div style="font-size:12px;color:var(--gold-bright);margin-top:6px;">New hero recruited: ${recruit.name}</div>`;
+      }
+    }
+    if(Math.random()<0.4){
+      const drop = ITEM_DATABASE[Math.floor(Math.random()*ITEM_DATABASE.length)];
+      state.inventory[drop.id] = (state.inventory[drop.id]||0)+1;
+      resultEl.innerHTML += `<div style="font-size:12px;color:#8fb8e0;margin-top:4px;">Found: ${drop.name}</div>`;
+    }
+    if(maybeAwardStageChest()){
+      resultEl.innerHTML += `<div style="font-size:12px;color:var(--gold-bright);margin-top:4px;">Milestone chest earned!</div>`;
+    }
+  } else {
+    resultEl.innerHTML = `<div class="verdict lose">Defeat</div><div style="font-size:12px;color:#a3987a;margin-top:4px;">Level up your heroes and try again.</div>`;
+  }
+  saveState();
+  renderHeader();
+  renderFormation();
+  renderRoster();
+  renderChests();
+}
+
+// ---------- 12. IDLE ----------
+function idleRatePerMin(){
+  return Math.round(formationPower() * IDLE_GOLD_PER_POWER_PER_MIN);
+}
+function computeIdleAccrual(){
+  const elapsedSec = Math.min(IDLE_CAP_SECONDS, (Date.now()-state.lastActiveTs)/1000);
+  const rate = idleRatePerMin();
+  return Math.floor((elapsedSec/60)*rate);
+}
+function renderIdle(){
+  const accrued = computeIdleAccrual();
+  document.getElementById("idleAccrued").textContent = accrued.toLocaleString();
+  document.getElementById("idleRate").textContent = `${idleRatePerMin()} gold / min from your formation`;
+  const elapsedSec = (Date.now()-state.lastActiveTs)/1000;
+  const pct = Math.min(100, (elapsedSec/IDLE_CAP_SECONDS)*100);
+  document.getElementById("idleBarFill").style.width = pct+"%";
+  document.getElementById("idleTimer").textContent = pct>=100 ? "Idle cap reached — claim to keep earning" : "Capped at 8 hours of accrual";
+  document.getElementById("claimBtn").disabled = accrued<=0;
+}
+document.getElementById("claimBtn").addEventListener("click", ()=>{
+  const accrued = computeIdleAccrual();
+  if(accrued>0){
+    state.gold += accrued;
+    state.lastActiveTs = Date.now();
+    saveState();
+    renderAll();
+    showToast(`Claimed ${accrued} gold`);
+  }
+});
+
+// ---------- 12a. TREASURE CHESTS ----------
+// Chests refill on a timer (like idle gold) and are also awarded as a stage
+// milestone bonus. Opening one rolls a small bundle of gold/items/relics —
+// see CHEST_REWARD_TABLE to reshape drop rates or add new reward types.
+const CHEST_REWARD_TABLE = {
+  goldRange: [40, 120],
+  itemChance: 0.7,
+  secondItemChance: 0.25,
+  relicChance: 0.3,
+  relicRange: [1, 3],
+};
+
+function grantPendingChests(){
+  const elapsed = Date.now() - state.lastChestGrantTs;
+  const grants = Math.floor(elapsed / CHEST_INTERVAL_MS);
+  if(grants > 0 && state.chests < CHEST_CAP){
+    const toAdd = Math.min(grants, CHEST_CAP - state.chests);
+    state.chests += toAdd;
+    state.lastChestGrantTs += toAdd * CHEST_INTERVAL_MS;
+  }
+  // don't let the timer run up credit past the cap while chests sit unopened
+  if(state.chests >= CHEST_CAP){
+    state.lastChestGrantTs = Date.now();
+  }
+}
+function maybeAwardStageChest(){
+  // one bonus chest every 3rd stage cleared, once per milestone
+  const milestone = Math.floor((state.stageIndex) / 3);
+  if(milestone > 0 && state.lastChestStageBonus < milestone && state.chests < CHEST_CAP){
+    state.chests++;
+    state.lastChestStageBonus = milestone;
+    return true;
+  }
+  return false;
+}
+
+function renderChests(){
+  grantPendingChests();
+  const grid = document.getElementById("chestGrid");
+  grid.innerHTML = "";
+  if(state.chests <= 0){
+    grid.innerHTML = `<div class="chest-empty-note">No chests right now — clear stages or wait for the next free one.</div>`;
+  } else {
+    for(let i=0;i<state.chests;i++){
+      const tile = document.createElement("div");
+      tile.className = "chest-tile";
+      tile.innerHTML = `
+        <div class="chest-icon"><div class="chest-lid"></div><div class="chest-body"></div><div class="chest-band"></div></div>
+        <div class="chest-label">Open</div>
+      `;
+      tile.addEventListener("click", ()=> openChest());
+      grid.appendChild(tile);
+    }
+  }
+  // countdown to next free chest
+  const timerEl = document.getElementById("nextChestTimer");
+  const fillEl = document.getElementById("chestTimerFill");
+  if(state.chests >= CHEST_CAP){
+    timerEl.textContent = "Storage full";
+    fillEl.style.width = "100%";
+  } else {
+    const elapsed = Date.now() - state.lastChestGrantTs;
+    const remaining = Math.max(0, CHEST_INTERVAL_MS - elapsed);
+    const mins = Math.floor(remaining/60000);
+    const hrs = Math.floor(mins/60);
+    timerEl.textContent = remaining<=0 ? "Ready now" : `${hrs}h ${mins%60}m`;
+    fillEl.style.width = Math.min(100, (elapsed/CHEST_INTERVAL_MS)*100) + "%";
+  }
+  // nav badge
+  const badge = document.getElementById("chestBadge");
+  badge.style.display = state.chests > 0 ? "block" : "none";
+}
+
+function rollChestRewards(){
+  const t = CHEST_REWARD_TABLE;
+  const rewards = [];
+  const gold = Math.round(t.goldRange[0] + Math.random()*(t.goldRange[1]-t.goldRange[0]));
+  state.gold += gold;
+  rewards.push({ label:`+${gold} gold`, color:"var(--gold-bright)" });
+
+  const itemRolls = (Math.random()<t.itemChance ? 1 : 0) + (Math.random()<t.secondItemChance ? 1 : 0);
+  for(let i=0;i<itemRolls;i++){
+    const item = ITEM_DATABASE[Math.floor(Math.random()*ITEM_DATABASE.length)];
+    state.inventory[item.id] = (state.inventory[item.id]||0)+1;
+    rewards.push({ label:item.name, color:`var(--c-${item.rarity})` });
+  }
+  if(Math.random() < t.relicChance){
+    const relics = Math.round(t.relicRange[0] + Math.random()*(t.relicRange[1]-t.relicRange[0]));
+    state.relics += relics;
+    rewards.push({ label:`+${relics} relic${relics>1?"s":""}`, color:"#b8a6e0" });
+  }
+  return rewards;
+}
+
+function openChest(){
+  if(state.chests <= 0) return;
+  state.chests--;
+  const rewards = rollChestRewards();
+  saveState();
+  renderAll();
+
+  const overlay = document.getElementById("chestReveal");
+  const card = document.getElementById("chestRevealCard");
+  card.innerHTML = `
+    <div class="big-chest" id="bigChest"><div class="chest-lid"></div><div class="chest-body"></div></div>
+    <div class="chest-reveal-title">Chest opened</div>
+    <div class="chest-rewards" id="chestRewardsList"></div>
+    <button class="primary" id="chestDoneBtn" style="margin-top:18px;">Continue</button>
+  `;
+  overlay.classList.add("active");
+  setTimeout(()=>{
+    document.getElementById("bigChest").classList.add("burst");
+    const list = document.getElementById("chestRewardsList");
+    rewards.forEach((r,idx)=>{
+      const row = document.createElement("div");
+      row.className = "chest-reward-row";
+      row.style.animationDelay = (idx*0.15)+"s";
+      row.innerHTML = `<span class="r-icon" style="background:${r.color};"></span><span style="color:${r.color};">${r.label}</span>`;
+      list.appendChild(row);
+    });
+  }, 500);
+  document.getElementById("chestDoneBtn").onclick = ()=>{ overlay.classList.remove("active"); };
+}
+
+// ---------- 12b. FORTUNE WHEEL ----------
+function grantPendingWheelSpins(){
+  const elapsed = Date.now() - state.lastWheelGrantTs;
+  const grants = Math.floor(elapsed / WHEEL_INTERVAL_MS);
+  if(grants > 0 && state.wheelSpins < WHEEL_CAP){
+    const toAdd = Math.min(grants, WHEEL_CAP - state.wheelSpins);
+    state.wheelSpins += toAdd;
+    state.lastWheelGrantTs += toAdd * WHEEL_INTERVAL_MS;
+  }
+  if(state.wheelSpins >= WHEEL_CAP){
+    state.lastWheelGrantTs = Date.now();
+  }
+}
+function renderWheel(){
+  grantPendingWheelSpins();
+  const dial = document.getElementById("wheelDial");
+  if(dial && !dial.dataset.painted){
+    const segAngle = 360/WHEEL_SEGMENTS.length;
+    const stops = WHEEL_SEGMENTS.map((s,i)=> `${s.color} ${i*segAngle}deg ${(i+1)*segAngle}deg`).join(", ");
+    dial.style.background = `conic-gradient(${stops})`;
+    dial.dataset.painted = "1";
+  }
+  const spinsLabel = document.getElementById("wheelSpinsLabel");
+  if(spinsLabel) spinsLabel.textContent = state.wheelSpins + (state.wheelSpins===1 ? " spin available" : " spins available");
+  const spinBtn = document.getElementById("spinBtn");
+  if(spinBtn) spinBtn.disabled = state.wheelSpins<=0;
+  const timerEl = document.getElementById("wheelTimer");
+  if(timerEl){
+    if(state.wheelSpins >= WHEEL_CAP){
+      timerEl.textContent = "Storage full";
+    } else {
+      const elapsed = Date.now() - state.lastWheelGrantTs;
+      const remaining = Math.max(0, WHEEL_INTERVAL_MS - elapsed);
+      const mins = Math.floor(remaining/60000);
+      const hrs = Math.floor(mins/60);
+      timerEl.textContent = remaining<=0 ? "Next free spin ready" : `Next free spin in ${hrs}h ${mins%60}m`;
+    }
+  }
+}
+function spinWheel(){
+  if(state.wheelSpins <= 0){ showToast("No spins available"); return; }
+  const dial = document.getElementById("wheelDial");
+  const spinBtn = document.getElementById("spinBtn");
+  if(!dial || spinBtn.disabled) return;
+  state.wheelSpins--;
+  spinBtn.disabled = true;
+
+  const idx = Math.floor(Math.random()*WHEEL_SEGMENTS.length);
+  const seg = WHEEL_SEGMENTS[idx];
+  const segAngle = 360/WHEEL_SEGMENTS.length;
+  const currentRotation = (parseFloat(dial.dataset.rotation)||0);
+  const targetWithinCircle = 360 - (idx*segAngle + segAngle/2); // land segment under top pointer
+  const extraSpins = 5*360;
+  const newRotation = currentRotation - (currentRotation % 360) + extraSpins + targetWithinCircle;
+  dial.style.transition = "transform 3s cubic-bezier(0.15,0.75,0.15,1)";
+  dial.style.transform = `rotate(${newRotation}deg)`;
+  dial.dataset.rotation = newRotation;
+
+  setTimeout(()=>{
+    let rewardLabel = seg.label;
+    let color = seg.color;
+    if(seg.type==="gold"){ state.gold += seg.value; }
+    else if(seg.type==="relics"){ state.relics += seg.value; }
+    else if(seg.type==="item_rarity"){
+      const pool = ITEM_DATABASE.filter(i=>i.rarity===seg.rarity);
+      const item = pool[Math.floor(Math.random()*pool.length)];
+      state.inventory[item.id] = (state.inventory[item.id]||0)+1;
+      rewardLabel = item.name;
+      color = `var(--c-${item.rarity})`;
+    } else if(seg.type==="jackpot"){
+      state.gold += 150; state.relics += 3;
+      const epics = ITEM_DATABASE.filter(i=>i.rarity==="epic");
+      const item = epics[Math.floor(Math.random()*epics.length)];
+      state.inventory[item.id] = (state.inventory[item.id]||0)+1;
+      rewardLabel = `JACKPOT — +150 gold, +3 relics, ${item.name}`;
+    }
+    saveState();
+    renderAll();
+    showToast(rewardLabel);
+    spinBtn.disabled = state.wheelSpins<=0;
+  }, 3100);
+}
+
+// ---------- 13. TOAST ----------
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
+}
+
+// ---------- 14. TAB NAV ----------
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("view-"+btn.dataset.view).classList.add("active");
+    if(btn.dataset.view==="idle") renderIdle();
+    if(btn.dataset.view==="chests"){ renderChests(); renderWheel(); }
+  });
+});
+
+// ---------- 15. SLOT CLICKS ----------
+document.querySelectorAll(".slot").forEach(slot=>{
+  slot.addEventListener("click", ()=> openSlotPicker(+slot.dataset.slot));
+});
+
+// ---------- 16. BATTLE BUTTON ----------
+document.getElementById("battleBtn").addEventListener("click", ()=>{
+  if(battleSession && battleSession.active) return; // already mid-battle
+  startBattle();
+});
+document.getElementById("spinBtn").addEventListener("click", spinWheel);
+
+// ---------- 17. MASTER RENDER ----------
+function renderAll(){
+  renderHeader();
+  renderFormation();
+  renderRoster();
+  renderIdle();
+  renderChests();
+  renderWheel();
+}
+
+// ---------- 18. BOOT ----------
+(async function boot(){
+  await loadState();
+  // default formation on very first run
+  if(state.formation.every(x=>x===null) && state.ownedHeroIds.length){
+    state.formation[2] = state.ownedHeroIds[0] || null;
+    state.formation[3] = state.ownedHeroIds[1] || null;
+    state.formation[4] = state.ownedHeroIds[2] || null;
+  }
+  renderAll();
+  setInterval(renderIdle, 5000);
+  setInterval(renderChests, 5000);
+  setInterval(renderWheel, 5000);
+  window.addEventListener("beforeunload", saveState);
+})();
+
+// ---------- 19. PWA SERVICE WORKER ----------
+// No-ops harmlessly inside the Claude chat preview (no service-worker.js
+// reachable there); activates once this file is deployed alongside it.
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
