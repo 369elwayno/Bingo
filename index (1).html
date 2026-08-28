@@ -184,6 +184,10 @@
   .item-row-count{color:#8a7d5f; font-family:'EB Garamond',serif; font-size:11px;}
   .item-row-stats{font-size:11px; color:var(--gold-bright); margin-top:3px;}
   .item-row-flavor{font-size:11px; color:#8a7d5f; font-style:italic; margin-top:3px;}
+  .upgrade-btn{margin-top:8px; width:100%; padding:7px; border:1px solid var(--gold); border-radius:5px; background:rgba(201,150,46,0.1);
+    color:var(--gold-bright); font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:0.04em; cursor:pointer;}
+  .upgrade-btn:disabled{border-color:#6b5f47; color:#6b5f47; background:none; cursor:default;}
+  .upgrade-btn.unaffordable{opacity:0.45;}
 
   /* ---------- Idle view ---------- */
   .idle-card{border:1px solid var(--parchment-edge); border-radius:8px; padding:22px 16px; text-align:center;
@@ -754,6 +758,11 @@ const STAGES = [
   { name:"Cracked Aqueduct",    enemyCount:3, enemyPowerMult:0.95 },
   { name:"Ember Watch",         enemyCount:4, enemyPowerMult:1.05 },
   { name:"The Sunken Archive",  enemyCount:4, enemyPowerMult:1.2  },
+  { name:"Hollow Vale Gate",    enemyCount:4, enemyPowerMult:1.35 },
+  { name:"The Bramble Maze",    enemyCount:5, enemyPowerMult:1.5  },
+  { name:"Duskfen Causeway",    enemyCount:5, enemyPowerMult:1.65 },
+  { name:"Ironroot Rampart",    enemyCount:5, enemyPowerMult:1.85 },
+  { name:"The Cinder Throne",   enemyCount:6, enemyPowerMult:2.1  },
 ];
 
 // ---------- 3. STATE ----------
@@ -772,6 +781,8 @@ let state = {
   lastChestStageBonus: -1, // last stageIndex a milestone chest was awarded for
   wheelSpins: 1,
   lastWheelGrantTs: Date.now(),
+  itemLevels: {}, // itemId -> level (default 1). Upgrading spends duplicate
+                   // copies + gold; see itemUpgradeCost/upgradeItem below.
 };
 
 const CHEST_INTERVAL_MS = 3*3600*1000; // free chest every 3 hours
@@ -831,6 +842,33 @@ function heroLevel(id){ return state.heroLevels[id] || 1; }
 function getItem(id){ return ITEM_DATABASE.find(i=>i.id===id); }
 function heroEquipped(id){ return state.equipped[id] || {weapon:null, armor:null, trinket:null}; }
 
+// ---------- 5a. ITEM LEVELING ----------
+// Duplicates found from battles/chests/the wheel become upgrade fuel: spend
+// (current level) copies + gold to push a gear TYPE up a level (applies
+// everywhere it's equipped, since gear is tracked by type, not instance —
+// see the note on ITEM_DATABASE). Capped at level 5.
+const ITEM_MAX_LEVEL = 5;
+function itemLevel(itemId){ return state.itemLevels[itemId] || 1; }
+function itemUpgradeCost(itemId){
+  const item = getItem(itemId);
+  const lvl = itemLevel(itemId);
+  return { dupes: lvl, gold: Math.round(20 * lvl * RARITY_MULT[item.rarity]) };
+}
+function upgradeItem(itemId){
+  const lvl = itemLevel(itemId);
+  if(lvl >= ITEM_MAX_LEVEL){ showToast("Already at max level"); return; }
+  const cost = itemUpgradeCost(itemId);
+  const owned = state.inventory[itemId] || 0;
+  if(owned < cost.dupes){ showToast(`Need ${cost.dupes} copies (have ${owned})`); return; }
+  if(state.gold < cost.gold){ showToast("Not enough gold"); return; }
+  state.inventory[itemId] -= cost.dupes;
+  state.gold -= cost.gold;
+  state.itemLevels[itemId] = lvl + 1;
+  saveState();
+  renderAll();
+  showToast(`${getItem(itemId).name} reached Lv${lvl+1}`);
+}
+
 function computedStats(id){
   const h = getHero(id);
   const lvl = heroLevel(id);
@@ -842,14 +880,15 @@ function computedStats(id){
     def: Math.round(h.base.def * rMult * lvlMult),
     spd: Math.round(h.base.spd * (1 + (rMult-1)*0.3)), // speed scales gently with rarity, not level
   };
-  // apply equipped gear on top of base stats
+  // apply equipped gear on top of base stats, scaled by that gear's level
   const eq = heroEquipped(id);
   EQUIP_SLOTS.forEach(slot=>{
     const itemId = eq[slot];
     if(!itemId) return;
     const item = getItem(itemId);
     if(!item) return;
-    Object.keys(item.stats).forEach(stat=>{ stats[stat] = (stats[stat]||0) + item.stats[stat]; });
+    const gearLvlMult = 1 + (itemLevel(itemId)-1)*0.15;
+    Object.keys(item.stats).forEach(stat=>{ stats[stat] = (stats[stat]||0) + Math.round(item.stats[stat]*gearLvlMult); });
   });
   return stats;
 }
@@ -1002,9 +1041,14 @@ function openHeroSheet(id){
     const item = itemId ? getItem(itemId) : null;
     const cell = document.createElement("div");
     cell.className = "equip-slot" + (item ? " filled" : "");
-    cell.innerHTML = item
-      ? `<div class="equip-slot-label">${slot}</div><div class="equip-item-name" style="color:var(--c-${item.rarity});">${item.name}</div><div class="equip-item-stats">${Object.entries(item.stats).map(([k,v])=>`+${v} ${k}`).join(" · ")}</div>`
-      : `<div class="equip-slot-label">${slot}</div><div class="equip-item-name empty">Empty</div>`;
+    if(item){
+      const lvl = itemLevel(itemId);
+      const gearLvlMult = 1 + (lvl-1)*0.15;
+      const scaledStats = Object.entries(item.stats).map(([k,v])=>`+${Math.round(v*gearLvlMult)} ${k}`).join(" · ");
+      cell.innerHTML = `<div class="equip-slot-label">${slot} · Lv${lvl}</div><div class="equip-item-name" style="color:var(--c-${item.rarity});">${item.name}</div><div class="equip-item-stats">${scaledStats}</div>`;
+    } else {
+      cell.innerHTML = `<div class="equip-slot-label">${slot}</div><div class="equip-item-name empty">Empty</div>`;
+    }
     cell.addEventListener("click", ()=> openItemPicker(id, slot));
     equipGrid.appendChild(cell);
   });
@@ -1043,7 +1087,7 @@ function closeSheet(){ document.getElementById("sheetOverlay").classList.remove(
 function openItemPicker(heroId, slot){
   const eq = heroEquipped(heroId);
   const currentItemId = eq[slot];
-  const owned = ITEM_DATABASE.filter(i=> i.slot===slot && (state.inventory[i.id]||0) > 0);
+  const owned = ITEM_DATABASE.filter(i=> i.slot===slot && ((state.inventory[i.id]||0) > 0 || i.id===currentItemId));
   const sheet = document.getElementById("sheetContent");
   sheet.innerHTML = `
     <button class="close-sheet" id="closeSheet">&times;</button>
@@ -1056,15 +1100,22 @@ function openItemPicker(heroId, slot){
     list.innerHTML = `<div class="empty-note">No ${slot} items owned yet. Win battles to find gear.</div>`;
   }
   owned.forEach(item=>{
-    const count = state.inventory[item.id];
+    const count = state.inventory[item.id] || 0;
+    const lvl = itemLevel(item.id);
+    const gearLvlMult = 1 + (lvl-1)*0.15;
+    const cost = itemUpgradeCost(item.id);
+    const maxed = lvl >= ITEM_MAX_LEVEL;
+    const canAfford = !maxed && count >= cost.dupes && state.gold >= cost.gold;
     const row = document.createElement("div");
     row.className = "item-row" + (currentItemId===item.id ? " selected" : "");
     row.innerHTML = `
-      <div class="item-row-name" style="color:var(--c-${item.rarity});">${item.name} <span class="item-row-count">×${count}</span></div>
-      <div class="item-row-stats">${Object.entries(item.stats).map(([k,v])=>`+${v} ${k}`).join(" · ")}</div>
+      <div class="item-row-name" style="color:var(--c-${item.rarity});">${item.name} <span class="item-row-count">Lv${lvl} · ×${count}</span></div>
+      <div class="item-row-stats">${Object.entries(item.stats).map(([k,v])=>`+${Math.round(v*gearLvlMult)} ${k}`).join(" · ")}</div>
       <div class="item-row-flavor">${item.flavor}</div>
+      <button class="upgrade-btn" data-item="${item.id}" ${maxed?"disabled":""}>${maxed ? "Max level" : `Upgrade — ${cost.dupes} copies + ${cost.gold}g`}</button>
     `;
-    row.addEventListener("click", ()=>{
+    row.addEventListener("click", (e)=>{
+      if(e.target.classList.contains("upgrade-btn")) return;
       if(!state.equipped[heroId]) state.equipped[heroId] = {weapon:null, armor:null, trinket:null};
       // return previously equipped item (if any) to inventory
       const prev = state.equipped[heroId][slot];
@@ -1073,6 +1124,13 @@ function openItemPicker(heroId, slot){
       state.inventory[item.id] = (state.inventory[item.id]||1)-1;
       saveState(); renderAll();
       openHeroSheet(heroId);
+    });
+    const upgradeBtn = row.querySelector(".upgrade-btn");
+    upgradeBtn.classList.toggle("unaffordable", !canAfford && !maxed);
+    upgradeBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      upgradeItem(item.id);
+      openItemPicker(heroId, slot); // refresh with new level/cost
     });
     list.appendChild(row);
   });

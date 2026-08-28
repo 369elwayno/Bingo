@@ -1,7 +1,7 @@
 // Chronicle Engine — service worker
 // Caches the app shell so the game loads and plays offline once installed.
 // Bump CACHE_NAME whenever index.html changes so users get the update.
-const CACHE_NAME = "chronicle-engine-v10";
+const CACHE_NAME = "chronicle-engine-v11";
 const APP_SHELL = [
   "./",
   "./index.html",
